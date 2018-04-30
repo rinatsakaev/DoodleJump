@@ -17,7 +17,8 @@ namespace DoodleJump
         public static IObstacle[,] Map;
         public static Dictionary<string, Action<IObstacle>> moves;
         private static double VerticalDistance = 15;
-
+        private static int LevelHeight;
+        private Func<int, IEnumerable<IObstacle>> MapGenerator;
         private static Player GetPlayer()
         {
             for (var x = 0; x < MapWidth; x++)
@@ -27,9 +28,14 @@ namespace DoodleJump
             throw new Exception("Player not found");
         }
 
-        public Level(IObstacle[,] map)
+        public Level(Func<int, IEnumerable<IObstacle>> mapGenerator, int mapHeight, int mapWidth)
         {
-            Map = map;
+            MapGenerator = mapGenerator;
+            Map = new IObstacle[mapWidth,mapHeight];
+            for (var y = 0; y < mapHeight; y++)
+                for (var x = 0; x < mapWidth; x++)
+                    Map[x, y] = mapGenerator(y).First();
+
             InitializeMoves();
         }
 
@@ -45,32 +51,33 @@ namespace DoodleJump
         {
             var currentCoordinates = Player.Coordinates;
             Player.Coordinates = new Vector(currentCoordinates.X + distance * Math.Cos(angle),
-                                currentCoordinates.Y + VerticalDistance);
+                                (currentCoordinates.Y + VerticalDistance) % (MapHeight / 2));
 
         }
 
         public static void MoveObstacles()
         {
             foreach (var obstacle in Obstacles)
+                if (!(obstacle is null))
                 moves[obstacle.GetType().Name](obstacle);
         }
 
-        public void MoveGreenPlatform(GreenPlatform platform)
-        {
-           
-        }
-
-        public void MoveRedPlatform(RedPlatform platform)
+        private void MoveGreenPlatform(GreenPlatform platform)
         {
 
         }
 
-        public void MoveUFO(UFO ufo)
+        private void MoveRedPlatform(RedPlatform platform)
         {
 
         }
 
-        public void MoveBullet(Bullet bullet)
+        private void MoveUFO(UFO ufo)
+        {
+
+        }
+
+        private void MoveBullet(Bullet bullet)
         {
 
         }
@@ -78,12 +85,46 @@ namespace DoodleJump
 
         public void UpdateMap()
         {
-           //тут проверить объекты, пересекающиеся с плеером и обновить у них Health. Ну и у самого плеера тоже
+            //тут проверить объекты, пересекающиеся с плеером и обновить у них Health. Ну и у самого плеера тоже
 
-            if (Player.Health == 0)
+            if (Player.Coordinates.Y <= 0 || Player.Health == 0)
                 IsCompleted = true;
-
+            RemoveOldObjectsFromMap();
+            AddNewObjectsToMap();
         }
+
+        private void AddNewObjectsToMap()
+        {
+            var isNullSegment = true;
+            for (var y = 0; y < MapHeight; y++)
+            {
+                isNullSegment = true;
+                var x = 0;
+                for (; x < MapWidth; x++)
+                {
+                    if (Map[x, y] != null)
+                        isNullSegment = false;
+                }
+
+                if (!isNullSegment) continue;
+
+                foreach (var obstacle in MapGenerator(LevelHeight))
+                    Map[x, y] = obstacle;
+            }
+                
+        }
+
+        private void RemoveOldObjectsFromMap()
+        {
+            for (var x = 0; x < MapWidth; x++)
+            for (var y = 0; y < MapHeight; y++)
+            {
+                if (Map[x, y].Coordinates.Y - Player.Coordinates.Y <= 0)
+                    Map[x, y] = null;
+            }
+        }
+
+
     }
 
     static class MapExtensions
