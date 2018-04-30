@@ -28,7 +28,7 @@ namespace DoodleJump
             throw new Exception("Player not found");
         }
 
-        public Level(Func<int, IEnumerable<IObstacle>> mapGenerator, int mapHeight, int mapWidth)
+        public Level(Func<int, IEnumerable<IObstacle>> mapGenerator, int mapWidth, int mapHeight)
         {
             MapGenerator = mapGenerator;
             Map = new IObstacle[mapWidth,mapHeight];
