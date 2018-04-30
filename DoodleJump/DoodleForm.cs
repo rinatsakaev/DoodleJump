@@ -14,7 +14,6 @@ namespace DoodleJump
     public partial class DoodleForm : Form
     {
         private bool right;
-        private bool space;
         private bool left;
         private double horizontalDistance = 10;
         private double verticalDistance = 20;
@@ -32,14 +31,10 @@ namespace DoodleJump
         private void TimerTick(object sender, EventArgs e)
         {
             var angle = Math.PI/2;
-            var distance = 0.0;
-            if (!space)
-                if (right) {angle = 0; distance = horizontalDistance;}
-                else if (left) {angle = Math.PI; distance = horizontalDistance; }
-            else
-                distance = verticalDistance;
+            if (right) angle = 0;
+            else if (left) angle = Math.PI;
       
-            MovePlayer(angle, distance);
+            MovePlayer(angle);
             MoveObstacles();
             if (Level.IsCompleted)
                 timer.Stop();
@@ -48,9 +43,9 @@ namespace DoodleJump
         }
 
 
-        private void MovePlayer(double angle, double distance)
+        private void MovePlayer(double angle)
         {
-            Level.MovePlayer(angle, distance);
+            Level.MovePlayer(angle, horizontalDistance);
         }
 
         private void MoveObstacles()
@@ -68,7 +63,6 @@ namespace DoodleJump
         {
             if (e == Keys.A) left = down;
             if (e == Keys.D) right = down;
-            if (e == Keys.Space) space = down;
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {

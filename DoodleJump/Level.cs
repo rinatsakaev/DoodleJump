@@ -16,6 +16,7 @@ namespace DoodleJump
         public static int MapHeight => Map.GetLength(1);
         public static IObstacle[,] Map;
         public static Dictionary<string, Action<IObstacle>> moves;
+        private static double VerticalDistance = 15;
 
         private static Player GetPlayer()
         {
@@ -44,7 +45,7 @@ namespace DoodleJump
         {
             var currentCoordinates = Player.Coordinates;
             Player.Coordinates = new Vector(currentCoordinates.X + distance * Math.Cos(angle),
-                                currentCoordinates.Y + distance * Math.Sin(angle));
+                                currentCoordinates.Y + VerticalDistance);
 
         }
 
@@ -74,12 +75,14 @@ namespace DoodleJump
 
         }
 
+
         public void UpdateMap()
         {
            //тут проверить объекты, пересекающиеся с плеером и обновить у них Health. Ну и у самого плеера тоже
 
             if (Player.Health == 0)
                 IsCompleted = true;
+
         }
     }
 
