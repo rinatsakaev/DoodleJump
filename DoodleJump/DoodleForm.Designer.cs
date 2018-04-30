@@ -1,6 +1,6 @@
 ﻿namespace DoodleJump
 {
-    partial class Form1
+    partial class DoodleForm
     {
         /// <summary>
         /// Required designer variable.
