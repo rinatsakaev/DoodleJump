@@ -18,15 +18,18 @@ namespace DoodleJump
         private bool left;
         private double horizontalDistance = 10;
         private readonly Timer timer;
-        private readonly Image rocketImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\rocketImage.png");
         private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bg.png");
         private HashSet<Type> allowedObjects = new HashSet<Type>();
+        private Control lbl = new Label();
         public DoodleForm()
         {
             InitializeComponent();
+            Controls.Add(lbl);
+          
             var level = new Level(GenerateMap, Height);
-            timer = new Timer { Interval = 10 };
+            timer = new Timer { Interval = 400 };
             timer.Tick += TimerTick;
+            timer.Start();
         }
 
 
@@ -49,7 +52,7 @@ namespace DoodleJump
         private IObstacle GetObstacleByType(Type type)
         {
             var rnd = new Random();
-            var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(Level.LevelHeight, Level.LevelHeight + Height));
+            var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(Level.LevelHeight, Height+Level.LevelHeight));
             var result = (IObstacle)Activator.CreateInstance(type, new object[]{coordinates});
             if (result is GreenPlatform)
             {
@@ -79,25 +82,14 @@ namespace DoodleJump
             if (right) angle = 0;
             else if (left) angle = Math.PI;
 
-            MovePlayer(angle);
-            MoveObstacles();
+            Level.MoveObjects(angle, horizontalDistance);
+            lbl.Text = Level.LevelHeight.ToString();
             if (Level.IsCompleted)
                 timer.Stop();
             Invalidate();
             Update();
         }
-
-
-        private void MovePlayer(double angle)
-        {
-            Level.MovePlayer(angle, horizontalDistance);
-        }
-
-        private void MoveObstacles()
-        {
-            Level.MoveObstacles();
-        }
-
+ 
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -125,10 +117,9 @@ namespace DoodleJump
                 var currentElement = Level.Map.Head;
                 for (var i = 0; i < Level.Map.Count; i++)
                 {
-                    g.DrawImage(currentElement.Value.Image, new Point((int)currentElement.Value.Coordinates.X, (int)currentElement.Value.Coordinates.Y));
+                    g.DrawImage(currentElement.Value.Image, new Point((int)currentElement.Value.Coordinates.X, (int)currentElement.Value.Coordinates.Y%Height));
                     currentElement = currentElement.Next;
                 }
-                g.DrawImage(rocketImage, new Point(-rocketImage.Width / 2, -rocketImage.Height / 2));
             }
         }
 

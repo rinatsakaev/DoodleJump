@@ -16,8 +16,8 @@ namespace DoodleJump
         private static double VerticalDistance = 15;
         public static int LevelHeight { get; private set; }
         private static int ScreenHeight;
-        private Func<IEnumerable<IObstacle>> MapGenerator;
-        private int AverageObjectHeight = 10;
+        private static Func<IEnumerable<IObstacle>> MapGenerator;
+        private static int AverageObjectHeight = 10;
         private static Player GetPlayer()
         {
             var currentElement = Map.Head;
@@ -51,7 +51,7 @@ namespace DoodleJump
             moves["BluePlatform"] = x => MoveBluePlatform((BluePlatform)x);
         }
 
-        public static void MovePlayer(double angle, double distance)
+        private static void MovePlayer(double angle, double distance)
         {
             var currentCoordinates = Player.Coordinates;
             var toPoint = new Vector(currentCoordinates.X + distance * Math.Cos(angle),
@@ -59,8 +59,9 @@ namespace DoodleJump
             Player.Move(toPoint);
         }
 
-        public static void MoveObstacles()
+        public static void MoveObjects(double playerAngle, double distance)
         {
+            MovePlayer(playerAngle, distance);
             var currentElement = Map.Head;
             for (var i = 0; i < Map.Count; i++)
             {
@@ -70,6 +71,7 @@ namespace DoodleJump
                 moves[currentElement.Value.GetType().Name](currentElement.Value);
             }
 
+            UpdateMap();
         }
 
         private void MoveGreenPlatform(GreenPlatform platform)
@@ -94,17 +96,21 @@ namespace DoodleJump
         }
 
 
-        public void UpdateMap()
+        public static void UpdateMap()
         {
-            //тут проверить объекты, пересекающиеся с плеером и обновить у них Health. Ну и у самого плеера тоже
             var currentElement = Map.Head;
             for (var i = 0; i < Map.Count; i++)
             {
-                if (currentElement.Value.Coordinates == Player.Coordinates)
+                if (!(currentElement.Value is Player) && currentElement.Value.Coordinates == Player.Coordinates)
                 {
                     Player.Health -= currentElement.Value.Damage;
                     if (currentElement.Value is RedPlatform)
                         currentElement.Value.Health -= Player.Damage;
+                }
+                else
+                {
+                    Player.Move(new Vector(Player.Coordinates.X,
+                        Player.Coordinates.Y - VerticalDistance));  
                 }
                 currentElement = currentElement.Next;
             }
@@ -115,15 +121,15 @@ namespace DoodleJump
             AddNewObjectsToMap();
         }
 
-        private void AddNewObjectsToMap()
+        private static void AddNewObjectsToMap()
         {
-            foreach (var obstacle in MapGenerator().Take(ScreenHeight / AverageObjectHeight))
+            foreach (var obstacle in MapGenerator())
                 Map.Enqueue(obstacle);
             LevelHeight += ScreenHeight / AverageObjectHeight;
         }
 
 
-        private void RemoveOldObjectsFromMap()
+        private static void RemoveOldObjectsFromMap()
         {
             var currentElement = Map.Tail;
             while (currentElement.Value.Coordinates.Y - LevelHeight <= 0)
