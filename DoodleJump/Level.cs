@@ -73,28 +73,24 @@ namespace DoodleJump
 
         private void MoveGreenPlatform(GreenPlatform platform)
         {
-
         }
 
         private void MoveRedPlatform(RedPlatform platform)
         {
-
         }
 
         private void MoveUFO(UFO ufo)
         {
-
         }
 
         private void MoveBullet(Bullet bullet)
         {
-
+            bullet.Move(new Vector(bullet.Coordinates.X, bullet.Coordinates.Y - 1));
         }
 
 
         public void UpdateMap()
         {
-
             //тут проверить объекты, пересекающиеся с плеером и обновить у них Health. Ну и у самого плеера тоже
             var currentElement = Map.Head;
             for (var i = 0; i < Map.Count; i++)

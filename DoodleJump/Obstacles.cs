@@ -94,7 +94,7 @@ namespace DoodleJump
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
-            throw new NotImplementedException();
+            Coordinates = toPoint;
         }
 
         public Image Image { get; set; }
