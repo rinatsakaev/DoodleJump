@@ -98,9 +98,9 @@ namespace DoodleJump
                 if (currentElement.Value.Coordinates == Player.Coordinates)
                 {
                     if (currentElement.Value is UFO)
-                        Player.Health--;
+                        Player.Health -= currentElement.Value.Damage;
                     if (currentElement.Value is RedPlatform)
-                        currentElement.Value.Health--;
+                        currentElement.Value.Health -= Player.Damage;
                 }
                 currentElement = currentElement.Next;
             }
