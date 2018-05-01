@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,24 +17,66 @@ namespace DoodleJump
         private bool right;
         private bool left;
         private double horizontalDistance = 10;
-        private double verticalDistance = 20;
         private readonly Timer timer;
         private readonly Image rocketImage = Image.FromFile("images/rocketImage.png");
         private readonly Image backgroundImage = Image.FromFile("images/bg.png");
+        private HashSet<Type> allowedObjects = new HashSet<Type>();
         public DoodleForm()
         {
             InitializeComponent();
-            Controls.Add(new Button());
+            var level = new Level(GenerateMap, Height);
             timer = new Timer { Interval = 10 };
             timer.Tick += TimerTick;
         }
 
+
+        private IEnumerable<IObstacle> GenerateMap()
+        {
+            if (Level.LevelHeight < 100)
+                allowedObjects.Add(typeof(GreenPlatform));
+            if (Level.LevelHeight < 500)
+                allowedObjects.Add(typeof(RedPlatform));
+            if (Level.LevelHeight > 1000)
+                allowedObjects.Add(typeof(UFO));
+            var random = new Random();
+
+            var type = allowedObjects.ElementAt(random.Next(allowedObjects.Count));
+
+            yield return GetObstacleByType(type);
+
+        }
+
+        private IObstacle GetObstacleByType(Type type)
+        {
+            var result = (IObstacle)Activator.CreateInstance(type);
+            if (result is GreenPlatform)
+            {
+                result.Damage = 0;
+                result.Health = 3;
+            }
+
+            if (result is RedPlatform)
+            {
+                result.Damage = 0;
+                result.Health = 0;
+            }
+
+            if (result is UFO)
+            {
+                result.Damage = 3;
+                result.Health = 2;
+            }
+            var rnd = new Random();
+            result.Coordinates = new Vector(rnd.Next(0, Width), rnd.Next(Level.LevelHeight, Level.LevelHeight + Height));
+            return result;
+        }
+
         private void TimerTick(object sender, EventArgs e)
         {
-            var angle = Math.PI/2;
+            var angle = Math.PI / 2;
             if (right) angle = 0;
             else if (left) angle = Math.PI;
-      
+
             MovePlayer(angle);
             MoveObstacles();
             if (Level.IsCompleted)
@@ -77,9 +120,11 @@ namespace DoodleJump
 
             if (timer.Enabled)
             {
-                foreach (var obstacle in Level.Obstacles)
+                var currentElement = Level.Map.Head;
+                for (var i = 0; i < Level.Map.Count; i++)
                 {
-                    g.DrawImage(obstacle.Image, new Point((int)obstacle.Coordinates.X, (int)obstacle.Coordinates.Y));
+                    g.DrawImage(currentElement.Value.Image, new Point((int)currentElement.Value.Coordinates.X, (int)currentElement.Value.Coordinates.Y));
+                    currentElement = currentElement.Next;
                 }
                 g.DrawImage(rocketImage, new Point(-rocketImage.Width / 2, -rocketImage.Height / 2));
             }

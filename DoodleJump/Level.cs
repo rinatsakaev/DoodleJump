@@ -10,32 +10,34 @@ namespace DoodleJump
     class Level
     {
         public static bool IsCompleted;
-        public static List<IObstacle> Obstacles => Map.ToList();
         public static Player Player => GetPlayer();
-        public static int MapWidth => Map.GetLength(0);
-        public static int MapHeight => Map.GetLength(1);
-        public static IObstacle[,] Map;
+        public static Queue<IObstacle> Map;
         public static Dictionary<string, Action<IObstacle>> moves;
         private static double VerticalDistance = 15;
-        private static int LevelHeight;
-        private Func<int, IEnumerable<IObstacle>> MapGenerator;
+        public static int LevelHeight { get; private set; }
+        private static int ScreenHeight;
+        private Func<IEnumerable<IObstacle>> MapGenerator;
+        private int AverageObjectHeight = 10;
         private static Player GetPlayer()
         {
-            for (var x = 0; x < MapWidth; x++)
-                for (var y = 0; y < MapHeight; y++)
-                    if (Map[x, y] is Player)
-                        return (Player)Map[x, y];
+            var currentElement = Map.Head;
+            for (var i = 0; i < Map.Count; i++)
+            {
+                if (currentElement.Value is Player)
+                    return currentElement.Value as Player;
+                currentElement = currentElement.Next;
+            }
+
             throw new Exception("Player not found");
         }
 
-        public Level(Func<int, IEnumerable<IObstacle>> mapGenerator, int mapWidth, int mapHeight)
+        public Level(Func<IEnumerable<IObstacle>> mapGenerator, int screenHeight)
         {
+            ScreenHeight = screenHeight;
             MapGenerator = mapGenerator;
-            Map = new IObstacle[mapWidth,mapHeight];
-            for (var y = 0; y < mapHeight; y++)
-                for (var x = 0; x < mapWidth; x++)
-                    Map[x, y] = mapGenerator(y).First();
-
+            Map = new Queue<IObstacle>();
+            Map.Enqueue(new Player(new Vector(10, 10)));
+            AddNewObjectsToMap();
             InitializeMoves();
         }
 
@@ -50,16 +52,23 @@ namespace DoodleJump
         public static void MovePlayer(double angle, double distance)
         {
             var currentCoordinates = Player.Coordinates;
-            Player.Coordinates = new Vector(currentCoordinates.X + distance * Math.Cos(angle),
-                                (currentCoordinates.Y + VerticalDistance) % (MapHeight / 2));
+            var toPoint = new Vector(currentCoordinates.X + distance * Math.Cos(angle),
+                currentCoordinates.Y + VerticalDistance);
+            Player.Move(toPoint);
 
         }
 
         public static void MoveObstacles()
         {
-            foreach (var obstacle in Obstacles)
-                if (!(obstacle is null))
-                moves[obstacle.GetType().Name](obstacle);
+            var currentElement = Map.Head;
+            for (var i = 0; i < Map.Count; i++)
+            {
+                if (currentElement.Value is Player)
+                    continue;
+                currentElement = currentElement.Next;
+                moves[currentElement.Value.GetType().Name](currentElement.Value);
+            }
+            
         }
 
         private void MoveGreenPlatform(GreenPlatform platform)
@@ -87,7 +96,7 @@ namespace DoodleJump
         {
             //тут проверить объекты, пересекающиеся с плеером и обновить у них Health. Ну и у самого плеера тоже
 
-            if (Player.Coordinates.Y <= 0 || Player.Health == 0)
+            if (Player.Health == 0)
                 IsCompleted = true;
             RemoveOldObjectsFromMap();
             AddNewObjectsToMap();
@@ -95,32 +104,20 @@ namespace DoodleJump
 
         private void AddNewObjectsToMap()
         {
-            var isNullSegment = true;
-            for (var y = 0; y < MapHeight; y++)
-            {
-                isNullSegment = true;
-                var x = 0;
-                for (; x < MapWidth; x++)
-                {
-                    if (Map[x, y] != null)
-                        isNullSegment = false;
-                }
-
-                if (!isNullSegment) continue;
-
-                foreach (var obstacle in MapGenerator(LevelHeight))
-                    Map[x, y] = obstacle;
-            }
-                
+            foreach (var obstacle in MapGenerator().Take(ScreenHeight/AverageObjectHeight))
+                Map.Enqueue(obstacle);
+            LevelHeight += ScreenHeight / AverageObjectHeight;
         }
+
 
         private void RemoveOldObjectsFromMap()
         {
-            for (var x = 0; x < MapWidth; x++)
-            for (var y = 0; y < MapHeight; y++)
+            var currentElement = Map.Tail;
+            while (currentElement.Value.Coordinates.Y - LevelHeight<=0)
             {
-                if (Map[x, y].Coordinates.Y - Player.Coordinates.Y <= 0)
-                    Map[x, y] = null;
+                if (Map.DequeueFromTail() is Player)
+                    IsCompleted = true;
+                currentElement = Map.Tail;
             }
         }
 
