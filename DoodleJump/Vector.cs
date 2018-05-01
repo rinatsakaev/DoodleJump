@@ -47,6 +47,15 @@ namespace DoodleJump
             }
         }
 
+        public static bool operator ==(Vector a, Vector b)
+        {
+            return (a.X - b.X < 1e5 && a.Y - b.Y < 1e5);
+        }
+        public static bool operator !=(Vector a, Vector b)
+        {
+            return !(a.X - b.X < 1e5 && a.Y - b.Y < 1e5);
+        }
+
         public static Vector operator -(Vector a, Vector b)
         {
             return new Vector(a.X - b.X, a.Y - b.Y);

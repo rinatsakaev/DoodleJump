@@ -68,7 +68,7 @@ namespace DoodleJump
                 currentElement = currentElement.Next;
                 moves[currentElement.Value.GetType().Name](currentElement.Value);
             }
-            
+
         }
 
         private void MoveGreenPlatform(GreenPlatform platform)
@@ -94,7 +94,20 @@ namespace DoodleJump
 
         public void UpdateMap()
         {
+
             //тут проверить объекты, пересекающиеся с плеером и обновить у них Health. Ну и у самого плеера тоже
+            var currentElement = Map.Head;
+            for (var i = 0; i < Map.Count; i++)
+            {
+                if (currentElement.Value.Coordinates == Player.Coordinates)
+                {
+                    if (currentElement.Value is UFO)
+                        Player.Health--;
+                    if (currentElement.Value is RedPlatform)
+                        currentElement.Value.Health--;
+                }
+                currentElement = currentElement.Next;
+            }
 
             if (Player.Health == 0)
                 IsCompleted = true;
@@ -104,7 +117,7 @@ namespace DoodleJump
 
         private void AddNewObjectsToMap()
         {
-            foreach (var obstacle in MapGenerator().Take(ScreenHeight/AverageObjectHeight))
+            foreach (var obstacle in MapGenerator().Take(ScreenHeight / AverageObjectHeight))
                 Map.Enqueue(obstacle);
             LevelHeight += ScreenHeight / AverageObjectHeight;
         }
@@ -113,7 +126,7 @@ namespace DoodleJump
         private void RemoveOldObjectsFromMap()
         {
             var currentElement = Map.Tail;
-            while (currentElement.Value.Coordinates.Y - LevelHeight<=0)
+            while (currentElement.Value.Coordinates.Y - LevelHeight <= 0)
             {
                 if (Map.DequeueFromTail() is Player)
                     IsCompleted = true;
