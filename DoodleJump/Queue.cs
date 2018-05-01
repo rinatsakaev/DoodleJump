@@ -47,6 +47,7 @@ namespace DoodleJump
         {
             if (Tail == null) throw new InvalidOperationException();
             Tail = Tail.Previous;
+            Count--;
             return Tail.Value;
         }
 
