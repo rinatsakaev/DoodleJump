@@ -18,8 +18,8 @@ namespace DoodleJump
         private bool left;
         private double horizontalDistance = 10;
         private readonly Timer timer;
-        private readonly Image rocketImage = Image.FromFile("images/rocketImage.png");
-        private readonly Image backgroundImage = Image.FromFile("images/bg.png");
+        private readonly Image rocketImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\rocketImage.png");
+        private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bg.png");
         private HashSet<Type> allowedObjects = new HashSet<Type>();
         public DoodleForm()
         {
@@ -48,7 +48,9 @@ namespace DoodleJump
 
         private IObstacle GetObstacleByType(Type type)
         {
-            var result = (IObstacle)Activator.CreateInstance(type);
+            var rnd = new Random();
+            var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(Level.LevelHeight, Level.LevelHeight + Height));
+            var result = (IObstacle)Activator.CreateInstance(type, new object[]{coordinates});
             if (result is GreenPlatform)
             {
                 result.Damage = 0;
@@ -66,8 +68,8 @@ namespace DoodleJump
                 result.Damage = 3;
                 result.Health = 2;
             }
-            var rnd = new Random();
-            result.Coordinates = new Vector(rnd.Next(0, Width), rnd.Next(Level.LevelHeight, Level.LevelHeight + Height));
+            
+            
             return result;
         }
 

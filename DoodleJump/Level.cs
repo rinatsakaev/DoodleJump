@@ -43,6 +43,7 @@ namespace DoodleJump
 
         private void InitializeMoves()
         {
+            moves = new Dictionary<string, Action<IObstacle>>();
             moves["GreenPlatform"] = x => MoveGreenPlatform((GreenPlatform)x);
             moves["RedPlatform"] = x => MoveRedPlatform((RedPlatform)x);
             moves["UFO"] = x => MoveUFO((UFO)x);
@@ -56,7 +57,6 @@ namespace DoodleJump
             var toPoint = new Vector(currentCoordinates.X + distance * Math.Cos(angle),
                 currentCoordinates.Y + VerticalDistance);
             Player.Move(toPoint);
-
         }
 
         public static void MoveObstacles()
