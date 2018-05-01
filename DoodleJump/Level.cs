@@ -47,6 +47,7 @@ namespace DoodleJump
             moves["RedPlatform"] = x => MoveRedPlatform((RedPlatform)x);
             moves["UFO"] = x => MoveUFO((UFO)x);
             moves["Bullet"] = x => MoveBullet((Bullet)x);
+            moves["BluePlatform"] = x => MoveBluePlatform((BluePlatform)x);
         }
 
         public static void MovePlayer(double angle, double distance)
@@ -87,6 +88,10 @@ namespace DoodleJump
         {
             bullet.Move(new Vector(bullet.Coordinates.X, bullet.Coordinates.Y - 1));
         }
+        private void MoveBluePlatform(BluePlatform platform)
+        {
+            platform.Move(new Vector(platform.Coordinates.X + 1, platform.Coordinates.Y));
+        }
 
 
         public void UpdateMap()
@@ -97,8 +102,7 @@ namespace DoodleJump
             {
                 if (currentElement.Value.Coordinates == Player.Coordinates)
                 {
-                    if (currentElement.Value is UFO)
-                        Player.Health -= currentElement.Value.Damage;
+                    Player.Health -= currentElement.Value.Damage;
                     if (currentElement.Value is RedPlatform)
                         currentElement.Value.Health -= Player.Damage;
                 }

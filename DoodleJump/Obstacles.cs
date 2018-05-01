@@ -48,6 +48,26 @@ namespace DoodleJump
         }
     }
 
+    public class BluePlatform : IObstacle
+    {
+        public Vector Coordinates { get; set; }
+        public int Health { get; set; }
+        public void Move(Vector toPoint)
+        {
+            Coordinates = toPoint;
+        }
+
+        public Image Image { get; set; }
+        public int Damage { get; set; }
+
+        public BluePlatform(Vector coordinates)
+        {
+            Coordinates = coordinates;
+            Health = 3;
+            Damage = 0;
+        }
+    }
+
     public class RedPlatform : IObstacle
     {
         public Vector Coordinates { get; set; }
