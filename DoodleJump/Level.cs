@@ -53,7 +53,7 @@ namespace DoodleJump
         {
             var currentCoordinates = Player.Coordinates;
             var toPoint = new Vector(currentCoordinates.X + distance * Math.Cos(angle),
-                currentCoordinates.Y + VerticalDistance);
+                currentCoordinates.Y);
             Player.Move(toPoint);
         }
 
@@ -99,7 +99,7 @@ namespace DoodleJump
             var currentElement = Map.Head;
             for (var i = 0; i < Map.Count; i++)
             {
-                if (!(currentElement.Value is Player) && currentElement.Value.Coordinates == Player.Coordinates)
+                if (!(currentElement.Value is Player) && false)
                 {
                     Player.Health -= currentElement.Value.Damage;
                     if (currentElement.Value is RedPlatform)
@@ -108,7 +108,7 @@ namespace DoodleJump
                 else
                 {
                     Player.Move(new Vector(Player.Coordinates.X,
-                        Player.Coordinates.Y - VerticalDistance));
+                        Player.Coordinates.Y));
                 }
                 currentElement = currentElement.Next;
             }
@@ -141,7 +141,7 @@ namespace DoodleJump
                     continue;
                 if (currentElement.Value is Player)
                     IsCompleted = true;
-               
+                Map.DequeueFromTail();
             }
         }
 

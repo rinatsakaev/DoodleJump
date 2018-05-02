@@ -10,6 +10,7 @@ namespace DoodleJump
     interface IObstacle
     {
         Vector Coordinates { get; }
+        int Acceleration { get; }
         int Health { get; set; }
         void Move(Vector toPoint);
         Image Image { get; set; }

@@ -27,7 +27,7 @@ namespace DoodleJump
             Controls.Add(lbl);
           
             var level = new Level(GenerateMap, Height);
-            timer = new Timer { Interval = 400 };
+            timer = new Timer { Interval = 80 };
             timer.Tick += TimerTick;
             timer.Start();
         }
@@ -40,7 +40,7 @@ namespace DoodleJump
                 allowedObjects.Add(typeof(GreenPlatform));
             if (playerHeight < 500)
                 allowedObjects.Add(typeof(RedPlatform));
-            if (playerHeight > 1000)
+            if (playerHeight < 1000)
                 allowedObjects.Add(typeof(UFO));
             var random = new Random();
 
@@ -120,6 +120,9 @@ namespace DoodleJump
                 for (var i = 0; i < Level.Map.Count; i++)
                 {
                     g.DrawImage(currentElement.Value.Image, new Point((int)currentElement.Value.Coordinates.X, (int)currentElement.Value.Coordinates.Y % Height));
+                    g.DrawString(currentElement.Value.Coordinates.X+" "+ currentElement.Value.Coordinates.Y,
+                        new Font("Arial", 10),
+                        new SolidBrush(Color.Black), new Point((int)currentElement.Value.Coordinates.X, (int)currentElement.Value.Coordinates.Y % Height));
                     currentElement = currentElement.Next;
                 }
             }
@@ -128,7 +131,9 @@ namespace DoodleJump
         protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.FillRectangle(Brushes.Bisque, ClientRectangle);
+            
             var g = Graphics.FromImage(backgroundImage);
+            g.Clear(Color.AntiqueWhite);
             DrawTo(g);
             e.Graphics.DrawImage(backgroundImage, (ClientRectangle.Width - backgroundImage.Width) / 2, (ClientRectangle.Height - backgroundImage.Height) / 2);
         }

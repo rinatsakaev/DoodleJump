@@ -12,13 +12,25 @@ namespace DoodleJump
     {
         public Vector Coordinates { get; private set; }
         public int Health { get; set; }
+        private bool isFalling;
+        private int MaxAcceleration = 15;
         public void Move(Vector toPoint)
         {
-            Coordinates = toPoint;
+            if (!isFalling && Acceleration < MaxAcceleration)
+                Acceleration++;
+            if (Acceleration == MaxAcceleration)
+                isFalling = true;
+            if (isFalling && Acceleration > -MaxAcceleration)
+                Acceleration--;
+            if (Acceleration == -MaxAcceleration)
+                isFalling = false;
+            Coordinates = new Vector(toPoint.X, toPoint.Y+Acceleration);
         }
 
         public Image Image { get; set; }
         public int Damage { get; set; }
+
+        public int Acceleration { get; private set; }
 
         public Player(Vector coordinates)
         {
@@ -41,6 +53,8 @@ namespace DoodleJump
         public Image Image { get; set; }
         public int Damage { get; set; }
 
+        public int Acceleration { get; }
+
         public GreenPlatform(Vector coordinates)
         {
             Coordinates = coordinates;
@@ -53,6 +67,7 @@ namespace DoodleJump
     public class BluePlatform : IObstacle
     {
         public Vector Coordinates { get; private set; }
+        public int Acceleration { get; }
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
@@ -74,6 +89,7 @@ namespace DoodleJump
     public class RedPlatform : IObstacle
     {
         public Vector Coordinates { get; private set; }
+        public int Acceleration { get; }
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
@@ -95,6 +111,7 @@ namespace DoodleJump
     public class UFO : IObstacle
     {
         public Vector Coordinates { get; private set; }
+        public int Acceleration { get; }
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
@@ -116,6 +133,7 @@ namespace DoodleJump
     public class Bullet:IObstacle
     {
         public Vector Coordinates { get; private set; }
+        public int Acceleration { get; }
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
