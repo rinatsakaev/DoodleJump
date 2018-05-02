@@ -10,7 +10,7 @@ namespace DoodleJump
 {
     public class Player:IObstacle
     {
-        public Vector Coordinates { get; set; }
+        public Vector Coordinates { get; private set; }
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
@@ -31,7 +31,7 @@ namespace DoodleJump
 
     public class GreenPlatform : IObstacle
     {
-        public Vector Coordinates { get; set; }
+        public Vector Coordinates { get; private set; }
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
@@ -52,7 +52,7 @@ namespace DoodleJump
 
     public class BluePlatform : IObstacle
     {
-        public Vector Coordinates { get; set; }
+        public Vector Coordinates { get; private set; }
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
@@ -73,7 +73,7 @@ namespace DoodleJump
 
     public class RedPlatform : IObstacle
     {
-        public Vector Coordinates { get; set; }
+        public Vector Coordinates { get; private set; }
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
@@ -94,7 +94,7 @@ namespace DoodleJump
 
     public class UFO : IObstacle
     {
-        public Vector Coordinates { get; set; }
+        public Vector Coordinates { get; private set; }
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
@@ -115,7 +115,7 @@ namespace DoodleJump
 
     public class Bullet:IObstacle
     {
-        public Vector Coordinates { get; set; }
+        public Vector Coordinates { get; private set; }
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
