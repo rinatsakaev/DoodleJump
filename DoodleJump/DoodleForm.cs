@@ -35,11 +35,12 @@ namespace DoodleJump
 
         private IEnumerable<IObstacle> GenerateMap()
         {
-            if (Level.LevelHeight < 100)
+            var playerHeight = Level.Player.Coordinates.Y;
+            if (playerHeight < 100)
                 allowedObjects.Add(typeof(GreenPlatform));
-            if (Level.LevelHeight < 500)
+            if (playerHeight < 500)
                 allowedObjects.Add(typeof(RedPlatform));
-            if (Level.LevelHeight > 1000)
+            if (playerHeight > 1000)
                 allowedObjects.Add(typeof(UFO));
             var random = new Random();
 
@@ -52,7 +53,8 @@ namespace DoodleJump
         private IObstacle GetObstacleByType(Type type)
         {
             var rnd = new Random();
-            var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(Level.LevelHeight, Height+Level.LevelHeight));
+            var playerHeight = (int) Level.Player.Coordinates.Y;
+            var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(playerHeight, Height+playerHeight));
             var result = (IObstacle)Activator.CreateInstance(type, new object[]{coordinates});
             if (result is GreenPlatform)
             {
@@ -83,7 +85,7 @@ namespace DoodleJump
             else if (left) angle = Math.PI;
 
             Level.MoveObjects(angle, horizontalDistance);
-            lbl.Text = Level.LevelHeight.ToString();
+            lbl.Text = "Player:"+Level.Player.Coordinates.X+" "+ Level.Player.Coordinates.Y;
             if (Level.IsCompleted)
                 timer.Stop();
             Invalidate();
@@ -117,7 +119,7 @@ namespace DoodleJump
                 var currentElement = Level.Map.Head;
                 for (var i = 0; i < Level.Map.Count; i++)
                 {
-                    g.DrawImage(currentElement.Value.Image, new Point((int)currentElement.Value.Coordinates.X, (int)currentElement.Value.Coordinates.Y%Height));
+                    g.DrawImage(currentElement.Value.Image, new Point((int)currentElement.Value.Coordinates.X, (int)currentElement.Value.Coordinates.Y % Height));
                     currentElement = currentElement.Next;
                 }
             }

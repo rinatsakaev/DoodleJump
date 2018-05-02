@@ -14,10 +14,8 @@ namespace DoodleJump
         public static Queue<IObstacle> Map;
         public static Dictionary<string, Action<IObstacle>> moves;
         private static double VerticalDistance = 15;
-        public static int LevelHeight { get; private set; }
         private static int ScreenHeight;
         private static Func<IEnumerable<IObstacle>> MapGenerator;
-        private static int AverageObjectHeight = 10;
         private static Player GetPlayer()
         {
             var currentElement = Map.Head;
@@ -36,7 +34,7 @@ namespace DoodleJump
             ScreenHeight = screenHeight;
             MapGenerator = mapGenerator;
             Map = new Queue<IObstacle>();
-            Map.Enqueue(new Player(new Vector(10, 10)));
+            Map.Enqueue(new Player(new Vector(250, 400)));
             AddNewObjectsToMap();
             InitializeMoves();
         }
@@ -110,7 +108,7 @@ namespace DoodleJump
                 else
                 {
                     Player.Move(new Vector(Player.Coordinates.X,
-                        Player.Coordinates.Y - VerticalDistance));  
+                        Player.Coordinates.Y - VerticalDistance));
                 }
                 currentElement = currentElement.Next;
             }
@@ -124,19 +122,26 @@ namespace DoodleJump
         private static void AddNewObjectsToMap()
         {
             foreach (var obstacle in MapGenerator())
+            {
+                if (!(Map.Count < 8 && Player.Coordinates.Y % ScreenHeight >= ScreenHeight / 2))
+                    break;
                 Map.Enqueue(obstacle);
-            LevelHeight += ScreenHeight / AverageObjectHeight;
+            }
+ 
+
         }
 
 
         private static void RemoveOldObjectsFromMap()
         {
             var currentElement = Map.Tail;
-            while (currentElement.Value.Coordinates.Y - LevelHeight <= 0)
+            for (var i = 0; i < Map.Count; i++)
             {
-                if (Map.DequeueFromTail() is Player)
+                if (!(currentElement.Value.Coordinates.Y - Player.Coordinates.Y > ScreenHeight / 2))
+                    continue;
+                if (currentElement.Value is Player)
                     IsCompleted = true;
-                currentElement = Map.Tail;
+               
             }
         }
 

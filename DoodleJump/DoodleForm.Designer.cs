@@ -1,4 +1,7 @@
-﻿namespace DoodleJump
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace DoodleJump
 {
     partial class DoodleForm
     {
@@ -32,9 +35,10 @@
             // 
             // DoodleForm
             // 
+            this.Size = new Size(400, 600);
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(583, 697);
             this.Name = "DoodleForm";
             this.Text = "Form1";
             this.ResumeLayout(false);
