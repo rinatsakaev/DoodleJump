@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,30 +12,23 @@ namespace DoodleJump
     {
         public static bool IsCompleted;
         public static Player Player => GetPlayer();
-        public static Queue<IObstacle> Map;
+        public static LinkedList<IObstacle> Map;
         public static Dictionary<string, Action<IObstacle>> moves;
         private static double VerticalDistance = 15;
         private static int ScreenHeight;
         private static Func<IEnumerable<IObstacle>> MapGenerator;
         private static Player GetPlayer()
         {
-            var currentElement = Map.Head;
-            for (var i = 0; i < Map.Count; i++)
-            {
-                if (currentElement.Value is Player)
-                    return currentElement.Value as Player;
-                currentElement = currentElement.Next;
-            }
-
-            throw new Exception("Player not found");
+            var player = (Player) Map.Where(e => e is Player).FirstOrDefault();
+            return  player ?? throw new Exception();
         }
 
         public Level(Func<IEnumerable<IObstacle>> mapGenerator, int screenHeight)
         {
             ScreenHeight = screenHeight;
             MapGenerator = mapGenerator;
-            Map = new Queue<IObstacle>();
-            Map.Enqueue(new Player(new Vector(250, 400)));
+            Map = new LinkedList<IObstacle>();
+            Map.AddFirst(new Player(new Vector(220, 400)));
             AddNewObjectsToMap();
             InitializeMoves();
         }
@@ -51,24 +45,31 @@ namespace DoodleJump
 
         private static void MovePlayer(double angle, double distance)
         {
-            var currentCoordinates = Player.Coordinates;
-            var toPoint = new Vector(currentCoordinates.X + distance * Math.Cos(angle),
-                currentCoordinates.Y);
-            Player.Move(toPoint);
+            var hasToJump = false;
+            foreach (var element in Map)
+            {
+
+                if (!(element is Player) && element.Coordinates.Y-Player.Coordinates.Y<=element.Image.Height &&
+                    Math.Abs(element.Coordinates.X - Player.Coordinates.X)<=element.Image.Width)
+                    hasToJump = true;
+            }
+            if (hasToJump)
+                Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(angle), Player.Coordinates.Y - VerticalDistance));
+            else
+            {
+                Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(angle), Player.Coordinates.Y));
+            }
         }
 
         public static void MoveObjects(double playerAngle, double distance)
         {
             MovePlayer(playerAngle, distance);
-            var currentElement = Map.Head;
-            for (var i = 0; i < Map.Count; i++)
+            foreach (var element in Map)
             {
-                if (currentElement.Value is Player)
+                if (element is Player)
                     continue;
-                currentElement = currentElement.Next;
-                moves[currentElement.Value.GetType().Name](currentElement.Value);
+                moves[element.GetType().Name](element);
             }
-
             UpdateMap();
         }
 
@@ -96,24 +97,8 @@ namespace DoodleJump
 
         public static void UpdateMap()
         {
-            var currentElement = Map.Head;
-            for (var i = 0; i < Map.Count; i++)
-            {
-                if (!(currentElement.Value is Player) && false)
-                {
-                    Player.Health -= currentElement.Value.Damage;
-                    if (currentElement.Value is RedPlatform)
-                        currentElement.Value.Health -= Player.Damage;
-                }
-                else
-                {
-                    Player.Move(new Vector(Player.Coordinates.X,
-                        Player.Coordinates.Y));
-                }
-                currentElement = currentElement.Next;
-            }
-
-            if (Player.Health == 0)
+        
+            if (Player.Health == 0 || Map.FindMaxElement() is Player && Map.Count!=1)
                 IsCompleted = true;
             RemoveOldObjectsFromMap();
             AddNewObjectsToMap();
@@ -123,26 +108,17 @@ namespace DoodleJump
         {
             foreach (var obstacle in MapGenerator())
             {
-                if (!(Map.Count < 8 && Player.Coordinates.Y % ScreenHeight >= ScreenHeight / 2))
-                    break;
-                Map.Enqueue(obstacle);
+                if (Map.Count < 8 && Player.Coordinates.Y % ScreenHeight <= ScreenHeight / 2)
+                    Map.AddLast(obstacle);
             }
- 
-
         }
 
 
         private static void RemoveOldObjectsFromMap()
         {
-            var currentElement = Map.Tail;
-            for (var i = 0; i < Map.Count; i++)
-            {
-                if (!(currentElement.Value.Coordinates.Y - Player.Coordinates.Y > ScreenHeight / 2))
-                    continue;
-                if (currentElement.Value is Player)
-                    IsCompleted = true;
-                Map.DequeueFromTail();
-            }
+            Map.RemoveAll(item =>
+                item.Coordinates.Y % ScreenHeight - Player.Coordinates.Y % ScreenHeight > ScreenHeight / 2);
+
         }
 
 
@@ -150,16 +126,53 @@ namespace DoodleJump
 
     static class MapExtensions
     {
-        public static List<T> ToList<T>(this T[,] map)
+        public static int RemoveAll<T>(this LinkedList<T> list, Predicate<T> match)
         {
-            var mapList = new List<T>();
-            for (var x = 0; x < map.GetLength(0); x++)
-                for (var y = 0; y < map.GetLength(1); y++)
+            if (list == null)
+            {
+                throw new ArgumentNullException("list");
+            }
+            if (match == null)
+            {
+                throw new ArgumentNullException("match");
+            }
+            var count = 0;
+            var node = list.First;
+            while (node != null)
+            {
+                var next = node.Next;
+                if (match(node.Value))
                 {
-                    mapList.Add(map[x, y]);
+                    list.Remove(node);
+                    count++;
                 }
+                node = next;
+            }
+            return count;
+        }
 
-            return mapList;
+        public static IObstacle FindMaxElement(this LinkedList<IObstacle> list)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException("list");
+            }
+       
+            var count = 0;
+            var node = list.First;
+            var max = 0.0;
+            IObstacle maxO = null;
+            while (node != null)
+            {
+                var next = node.Next;
+                if (node.Value.Coordinates.Y>max)
+                {
+                    maxO = node.Value;
+                    max = node.Value.Coordinates.Y;
+                }
+                node = next;
+            }
+            return maxO;
         }
     }
 }

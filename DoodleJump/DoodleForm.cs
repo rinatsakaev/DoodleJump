@@ -25,9 +25,9 @@ namespace DoodleJump
         {
             InitializeComponent();
             Controls.Add(lbl);
-          
+
             var level = new Level(GenerateMap, Height);
-            timer = new Timer { Interval = 80 };
+            timer = new Timer { Interval = 30 };
             timer.Tick += TimerTick;
             timer.Start();
         }
@@ -36,12 +36,12 @@ namespace DoodleJump
         private IEnumerable<IObstacle> GenerateMap()
         {
             var playerHeight = Level.Player.Coordinates.Y;
-            if (playerHeight < 100)
+            if (playerHeight > 100)
                 allowedObjects.Add(typeof(GreenPlatform));
-            if (playerHeight < 500)
-                allowedObjects.Add(typeof(RedPlatform));
-            if (playerHeight < 1000)
-                allowedObjects.Add(typeof(UFO));
+            /* if (playerHeight < 500)
+                 allowedObjects.Add(typeof(RedPlatform));
+             if (playerHeight < 1000)
+                 allowedObjects.Add(typeof(UFO));*/
             var random = new Random();
 
             var type = allowedObjects.ElementAt(random.Next(allowedObjects.Count));
@@ -53,9 +53,11 @@ namespace DoodleJump
         private IObstacle GetObstacleByType(Type type)
         {
             var rnd = new Random();
-            var playerHeight = (int) Level.Player.Coordinates.Y;
+            var playerHeight = (int)Level.Player.Coordinates.Y;
             var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(playerHeight, Height+playerHeight));
-            var result = (IObstacle)Activator.CreateInstance(type, new object[]{coordinates});
+            //var coordinates = new Vector(220, Height*2/3);
+
+            var result = (IObstacle)Activator.CreateInstance(type, new object[] { coordinates });
             if (result is GreenPlatform)
             {
                 result.Damage = 0;
@@ -73,8 +75,8 @@ namespace DoodleJump
                 result.Damage = 3;
                 result.Health = 2;
             }
-            
-            
+
+
             return result;
         }
 
@@ -85,13 +87,13 @@ namespace DoodleJump
             else if (left) angle = Math.PI;
 
             Level.MoveObjects(angle, horizontalDistance);
-            lbl.Text = "Player:"+Level.Player.Coordinates.X+" "+ Level.Player.Coordinates.Y;
+            lbl.Text = "Player:" + Level.Player.Coordinates.X + " " + Level.Player.Coordinates.Y;
             if (Level.IsCompleted)
                 timer.Stop();
             Invalidate();
             Update();
         }
- 
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -116,14 +118,13 @@ namespace DoodleJump
 
             if (timer.Enabled)
             {
-                var currentElement = Level.Map.Head;
-                for (var i = 0; i < Level.Map.Count; i++)
+                foreach (var element in Level.Map)
                 {
-                    g.DrawImage(currentElement.Value.Image, new Point((int)currentElement.Value.Coordinates.X, (int)currentElement.Value.Coordinates.Y % Height));
-                    g.DrawString(currentElement.Value.Coordinates.X+" "+ currentElement.Value.Coordinates.Y,
+                    g.DrawImage(element.Image, new Point((int)element.Coordinates.X, (int)element.Coordinates.Y % Height));
+                    g.DrawString(element.Coordinates.X + " " + element.Coordinates.Y,
                         new Font("Arial", 10),
-                        new SolidBrush(Color.Black), new Point((int)currentElement.Value.Coordinates.X, (int)currentElement.Value.Coordinates.Y % Height));
-                    currentElement = currentElement.Next;
+                        new SolidBrush(Color.Black), new Point((int)element.Coordinates.X, (int)element.Coordinates.Y % Height));
+                  
                 }
             }
         }
@@ -131,7 +132,6 @@ namespace DoodleJump
         protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.FillRectangle(Brushes.Bisque, ClientRectangle);
-            
             var g = Graphics.FromImage(backgroundImage);
             g.Clear(Color.AntiqueWhite);
             DrawTo(g);

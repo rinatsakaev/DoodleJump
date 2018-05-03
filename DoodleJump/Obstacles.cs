@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DoodleJump
 {
-    public class Player:IObstacle
+    public class Player : IObstacle
     {
         public Vector Coordinates { get; private set; }
         public int Health { get; set; }
@@ -16,15 +16,19 @@ namespace DoodleJump
         private int MaxAcceleration = 15;
         public void Move(Vector toPoint)
         {
+            if (toPoint.Y != Coordinates.Y)
+            {
+                Acceleration = 0;
+                isFalling = false;
+            }
+
             if (!isFalling && Acceleration < MaxAcceleration)
                 Acceleration++;
             if (Acceleration == MaxAcceleration)
                 isFalling = true;
-            if (isFalling && Acceleration > -MaxAcceleration)
+            if (isFalling)
                 Acceleration--;
-            if (Acceleration == -MaxAcceleration)
-                isFalling = false;
-            Coordinates = new Vector(toPoint.X, toPoint.Y+Acceleration);
+            Coordinates = new Vector(toPoint.X, toPoint.Y - Acceleration);
         }
 
         public Image Image { get; set; }
@@ -130,7 +134,7 @@ namespace DoodleJump
         }
     }
 
-    public class Bullet:IObstacle
+    public class Bullet : IObstacle
     {
         public Vector Coordinates { get; private set; }
         public int Acceleration { get; }
