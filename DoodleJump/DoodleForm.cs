@@ -18,14 +18,14 @@ namespace DoodleJump
         private bool left;
         private double horizontalDistance = 10;
         private readonly Timer timer;
-        private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bg.png");
+        private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\bg.png");
         private HashSet<Type> allowedObjects = new HashSet<Type>();
         private Control lbl = new Label();
         public DoodleForm()
         {
             InitializeComponent();
             Controls.Add(lbl);
-
+            DoubleBuffered = true;
             var level = new Level(GenerateMap, Height);
             timer = new Timer { Interval = 30 };
             timer.Tick += TimerTick;
