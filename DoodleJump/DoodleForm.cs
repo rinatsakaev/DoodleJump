@@ -27,7 +27,7 @@ namespace DoodleJump
             Controls.Add(lbl);
 
             var level = new Level(GenerateMap, Height);
-            timer = new Timer { Interval = 30 };
+            timer = new Timer { Interval = 20 };
             timer.Tick += TimerTick;
             timer.Start();
         }
@@ -36,7 +36,7 @@ namespace DoodleJump
         private IEnumerable<IObstacle> GenerateMap()
         {
             var playerHeight = Level.Player.Coordinates.Y;
-            if (playerHeight > 100)
+            if (playerHeight < 100)
                 allowedObjects.Add(typeof(GreenPlatform));
             /* if (playerHeight < 500)
                  allowedObjects.Add(typeof(RedPlatform));
@@ -53,10 +53,9 @@ namespace DoodleJump
         private IObstacle GetObstacleByType(Type type)
         {
             var rnd = new Random();
-            var playerHeight = (int)Level.Player.Coordinates.Y;
-            var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(playerHeight, Height+playerHeight));
-            //var coordinates = new Vector(220, Height*2/3);
-
+          
+            var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(0, Height));
+            //var coordinates = new Vector(200, 100);
             var result = (IObstacle)Activator.CreateInstance(type, new object[] { coordinates });
             if (result is GreenPlatform)
             {
@@ -114,25 +113,27 @@ namespace DoodleJump
         private void DrawTo(Graphics g)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            
             g.FillRectangle(Brushes.Beige, ClientRectangle);
 
             if (timer.Enabled)
             {
                 foreach (var element in Level.Map)
                 {
-                    g.DrawImage(element.Image, new Point((int)element.Coordinates.X, (int)element.Coordinates.Y % Height));
-                    g.DrawString(element.Coordinates.X + " " + element.Coordinates.Y,
-                        new Font("Arial", 10),
-                        new SolidBrush(Color.Black), new Point((int)element.Coordinates.X, (int)element.Coordinates.Y % Height));
-                  
+                    g.DrawImage(element.Image, new Point((int)element.Coordinates.X, (int)element.Coordinates.Y));
+                   
                 }
             }
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            e.Graphics.ScaleTransform(1.0F, -1.0F);
+            e.Graphics.TranslateTransform(0.0F, -(float)Height);
             e.Graphics.FillRectangle(Brushes.Bisque, ClientRectangle);
             var g = Graphics.FromImage(backgroundImage);
+           
+
             g.Clear(Color.AntiqueWhite);
             DrawTo(g);
             e.Graphics.DrawImage(backgroundImage, (ClientRectangle.Width - backgroundImage.Width) / 2, (ClientRectangle.Height - backgroundImage.Height) / 2);

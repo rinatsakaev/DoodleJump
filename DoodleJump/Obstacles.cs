@@ -13,7 +13,7 @@ namespace DoodleJump
         public Vector Coordinates { get; private set; }
         public int Health { get; set; }
         private bool isFalling;
-        private int MaxAcceleration = 15;
+        private int MaxAcceleration = 13;
         public void Move(Vector toPoint)
         {
             if (toPoint.Y != Coordinates.Y)
@@ -28,7 +28,7 @@ namespace DoodleJump
                 isFalling = true;
             if (isFalling)
                 Acceleration--;
-            Coordinates = new Vector(toPoint.X, toPoint.Y - Acceleration);
+            Coordinates = new Vector(toPoint.X, toPoint.Y + Acceleration);
         }
 
         public Image Image { get; set; }
@@ -42,6 +42,7 @@ namespace DoodleJump
             Health = 3;
             Damage = 1;
             Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\player.png");
+            Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
         }
     }
 
@@ -65,6 +66,7 @@ namespace DoodleJump
             Health = 3;
             Damage = 0;
             Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\greenplatform.png");
+            Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
         }
     }
 
@@ -87,6 +89,7 @@ namespace DoodleJump
             Health = 3;
             Damage = 0;
             Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\blueplatform.png");
+            Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
         }
     }
 
@@ -109,6 +112,7 @@ namespace DoodleJump
             Health = 0;
             Damage = 0;
             Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\redplatform.png");
+            Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
         }
     }
 
@@ -131,6 +135,7 @@ namespace DoodleJump
             Damage = 3;
             Health = 2;
             Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\ufo.png");
+            Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
         }
     }
 
@@ -153,6 +158,7 @@ namespace DoodleJump
             Damage = 1;
             Health = 0;
             Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bullet.png");
+            Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
         }
     }
 }

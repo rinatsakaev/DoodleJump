@@ -17,6 +17,7 @@ namespace DoodleJump
         private static double VerticalDistance = 15;
         private static int ScreenHeight;
         private static Func<IEnumerable<IObstacle>> MapGenerator;
+        private static bool hasToJump = false;
         private static Player GetPlayer()
         {
             var player = (Player) Map.Where(e => e is Player).FirstOrDefault();
@@ -28,7 +29,7 @@ namespace DoodleJump
             ScreenHeight = screenHeight;
             MapGenerator = mapGenerator;
             Map = new LinkedList<IObstacle>();
-            Map.AddFirst(new Player(new Vector(220, 400)));
+            Map.AddFirst(new Player(new Vector(220, 0)));
             AddNewObjectsToMap();
             InitializeMoves();
         }
@@ -45,20 +46,7 @@ namespace DoodleJump
 
         private static void MovePlayer(double angle, double distance)
         {
-            var hasToJump = false;
-            foreach (var element in Map)
-            {
-
-                if (!(element is Player) && element.Coordinates.Y-Player.Coordinates.Y<=element.Image.Height &&
-                    Math.Abs(element.Coordinates.X - Player.Coordinates.X)<=element.Image.Width)
-                    hasToJump = true;
-            }
-            if (hasToJump)
-                Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(angle), Player.Coordinates.Y - VerticalDistance));
-            else
-            {
-                Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(angle), Player.Coordinates.Y));
-            }
+            Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(angle), Player.Coordinates.Y ));
         }
 
         public static void MoveObjects(double playerAngle, double distance)
@@ -97,10 +85,26 @@ namespace DoodleJump
 
         public static void UpdateMap()
         {
-        
-            if (Player.Health == 0 || Map.FindMaxElement() is Player && Map.Count!=1)
-                IsCompleted = true;
             RemoveOldObjectsFromMap();
+       
+            foreach (var element in Map)
+            {
+                if (element is Player)
+                    continue;
+                if (Player.Coordinates.Y - element.Coordinates.Y <= element.Image.Height
+                    && Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width )
+                    Player.Move(new Vector(Player.Coordinates.X , Player.Coordinates.Y+VerticalDistance/4));
+                if (Player.Coordinates.Y > ScreenHeight * 0.5)
+                
+                    element.Move(new Vector(element.Coordinates.X, element.Coordinates.Y - VerticalDistance / 4));
+
+                    
+            }
+
+
+            if (Player.Health == 0||Map.FindMinElement() is Player && Player.Acceleration<=0)
+                IsCompleted = true;
+            
             AddNewObjectsToMap();
         }
 
@@ -108,7 +112,7 @@ namespace DoodleJump
         {
             foreach (var obstacle in MapGenerator())
             {
-                if (Map.Count < 8 && Player.Coordinates.Y % ScreenHeight <= ScreenHeight / 2)
+                if (Map.Count < 8 && Player.Coordinates.Y % ScreenHeight <= ScreenHeight * 2 / 3)
                     Map.AddLast(obstacle);
             }
         }
@@ -117,7 +121,7 @@ namespace DoodleJump
         private static void RemoveOldObjectsFromMap()
         {
             Map.RemoveAll(item =>
-                item.Coordinates.Y % ScreenHeight - Player.Coordinates.Y % ScreenHeight > ScreenHeight / 2);
+                item.Coordinates.Y <0);
 
         }
 
@@ -151,7 +155,7 @@ namespace DoodleJump
             return count;
         }
 
-        public static IObstacle FindMaxElement(this LinkedList<IObstacle> list)
+        public static IObstacle FindMinElement(this LinkedList<IObstacle> list)
         {
             if (list == null)
             {
@@ -160,15 +164,15 @@ namespace DoodleJump
        
             var count = 0;
             var node = list.First;
-            var max = 0.0;
+            var min = double.MaxValue;
             IObstacle maxO = null;
             while (node != null)
             {
                 var next = node.Next;
-                if (node.Value.Coordinates.Y>max)
+                if (node.Value.Coordinates.Y<min)
                 {
                     maxO = node.Value;
-                    max = node.Value.Coordinates.Y;
+                    min = node.Value.Coordinates.Y;
                 }
                 node = next;
             }
