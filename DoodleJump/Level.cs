@@ -86,21 +86,30 @@ namespace DoodleJump
         public static void UpdateMap()
         {
             RemoveOldObjectsFromMap();
-       
+            bool jump = false;
             foreach (var element in Map)
             {
                 if (element is Player)
                     continue;
                 if (Player.Coordinates.Y - element.Coordinates.Y <= element.Image.Height
-                    && Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width )
-                    Player.Move(new Vector(Player.Coordinates.X , Player.Coordinates.Y+VerticalDistance/4));
-                if (Player.Coordinates.Y > ScreenHeight * 0.5)
+                    && Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width)
+                {
+                    jump = true;
+                    break;
+                }
                 
-                    element.Move(new Vector(element.Coordinates.X, element.Coordinates.Y - VerticalDistance / 4));
-
-                    
             }
 
+            if (jump)
+                Player.Move(new Vector(Player.Coordinates.X, Player.Coordinates.Y + VerticalDistance/5));
+ 
+            foreach (var element in Map)
+            {
+                if (element is Player)
+                    continue;
+                if (Player.Coordinates.Y > ScreenHeight * 0.2)
+                    element.Move(new Vector(element.Coordinates.X, element.Coordinates.Y - VerticalDistance/5));
+            }
 
             if (Player.Health == 0||Map.FindMinElement() is Player && Player.Acceleration<=0)
                 IsCompleted = true;
@@ -112,7 +121,7 @@ namespace DoodleJump
         {
             foreach (var obstacle in MapGenerator())
             {
-                if (Map.Count < 8 && Player.Coordinates.Y % ScreenHeight <= ScreenHeight * 2 / 3)
+                if (Map.Count<8&&Player.Coordinates.Y <= ScreenHeight * 0.5)
                     Map.AddLast(obstacle);
             }
         }

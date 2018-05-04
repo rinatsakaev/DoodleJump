@@ -13,7 +13,7 @@ namespace DoodleJump
         public Vector Coordinates { get; private set; }
         public int Health { get; set; }
         private bool isFalling;
-        private int MaxAcceleration = 13;
+        private int MaxAcceleration = 15;
         public void Move(Vector toPoint)
         {
             if (toPoint.Y != Coordinates.Y)
