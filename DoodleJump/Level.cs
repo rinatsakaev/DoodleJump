@@ -103,8 +103,8 @@ namespace DoodleJump
             {
                 if (element is Player)
                     continue;
-                if (Math.Abs(Player.Coordinates.Y - element.Coordinates.Y) <= element.Image.Height
-                    && Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width / 2)
+                if (Math.Abs(Player.Coordinates.Y - element.Coordinates.Y) <= element.Image.Height + 10
+                    && Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width / 2 + 5 && Player.isFalling)
                 {
                     Player.Jump();
                     break;
