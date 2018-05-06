@@ -101,7 +101,7 @@ namespace DoodleJump
 
             foreach (var element in Map)
             {
-                if (element is Player)
+                if (element is Player || element is Bullet)
                     continue;
                 if (Math.Abs(Player.Coordinates.Y - element.Coordinates.Y) <= element.Image.Height + 10
                     && Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width / 2 + 5 && Player.isFalling)

@@ -16,6 +16,7 @@ namespace DoodleJump
     {
         private bool right;
         private bool left;
+        private bool space;
         private double horizontalDistance = 10;
         private readonly Timer timer;
         //private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bg.png");
@@ -76,6 +77,11 @@ namespace DoodleJump
                 result.Health = 2;
             }
 
+            if (result is Bullet)
+            {
+                result.Damage = 2;
+                result.Health = 3;
+            }
 
             return result;
         }
@@ -85,6 +91,8 @@ namespace DoodleJump
             var angle = Math.PI / 2;
             if (right) angle = 0;
             else if (left) angle = Math.PI;
+            if (space)
+                Level.Map.AddFirst(new Bullet(Level.Player.Coordinates));
 
             Level.MoveObjects(angle, horizontalDistance);
             lbl.Text = "Player:" + Level.Player.Coordinates.X + " " + Level.Player.Coordinates.Y + "\n" + Level.Player.Acceleration;
@@ -104,6 +112,7 @@ namespace DoodleJump
         {
             if (e == Keys.A) left = down;
             if (e == Keys.D) right = down;
+            if (e == Keys.Space) space = down;
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {

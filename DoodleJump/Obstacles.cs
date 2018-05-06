@@ -172,7 +172,7 @@ namespace DoodleJump
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
-            Coordinates = toPoint;
+            Coordinates = new Vector(toPoint.X, toPoint.Y + 15);
         }
 
         public Image Image { get; set; }
