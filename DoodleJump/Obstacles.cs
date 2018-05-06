@@ -80,15 +80,24 @@ namespace DoodleJump
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
-
-            if (isFalling&&Acceleration>-MaxAcceleration)
-                Acceleration--;
-            if (!isFalling && Acceleration < MaxAcceleration)
-                Acceleration++;
-            if (Acceleration == MaxAcceleration)
-                isFalling = true;
-            if (Acceleration == -MaxAcceleration)
+            //if (isFalling&&Acceleration>-MaxAcceleration)
+            //    Acceleration--;
+            //if (!isFalling && Acceleration < MaxAcceleration)
+            //    Acceleration++;
+            //if (Acceleration == MaxAcceleration)
+            //    isFalling = true;
+            //if (Acceleration == -MaxAcceleration)
+            //    isFalling = false;
+            //Coordinates = new Vector(toPoint.X + Acceleration, toPoint.Y);
+            var speed = 5;
+            if (isFalling)
+                Acceleration = speed;
+            else
+                Acceleration = -speed;
+            if (toPoint.X + Acceleration > 400)
                 isFalling = false;
+            if (toPoint.X + Acceleration < 0)
+                isFalling = true;
             Coordinates = new Vector(toPoint.X + Acceleration, toPoint.Y);
         }
 
