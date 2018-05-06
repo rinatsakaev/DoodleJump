@@ -37,12 +37,12 @@ namespace DoodleJump
         private IEnumerable<IObstacle> GenerateMap()
         {
             var playerHeight = Level.Player.Coordinates.Y;
-           
-                allowedObjects.Add(typeof(GreenPlatform));
-             
-                 allowedObjects.Add(typeof(BluePlatform));
-    
-     
+
+            allowedObjects.Add(typeof(GreenPlatform));
+
+            allowedObjects.Add(typeof(BluePlatform));
+
+
             var random = new Random();
 
             var type = allowedObjects.ElementAt(random.Next(allowedObjects.Count));
@@ -54,7 +54,7 @@ namespace DoodleJump
         private IObstacle GetObstacleByType(Type type)
         {
             var rnd = new Random();
-          
+
             var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(0, Height));
             //var coordinates = new Vector(200, 60);
             var result = (IObstacle)Activator.CreateInstance(type, new object[] { coordinates });
@@ -87,7 +87,7 @@ namespace DoodleJump
             else if (left) angle = Math.PI;
 
             Level.MoveObjects(angle, horizontalDistance);
-            lbl.Text = "Player:" + Level.Player.Coordinates.X + " " + Level.Player.Coordinates.Y+"\n"+Level.Player.Acceleration;
+            lbl.Text = "Player:" + Level.Player.Coordinates.X + " " + Level.Player.Coordinates.Y + "\n" + Level.Player.Acceleration;
             if (Level.IsCompleted)
                 timer.Stop();
             Invalidate();
@@ -114,14 +114,14 @@ namespace DoodleJump
         private void DrawTo(Graphics g)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            
+
             g.FillRectangle(Brushes.Beige, ClientRectangle);
 
             if (timer.Enabled)
             {
                 foreach (var element in Level.Map)
                 {
-                   
+
                     g.DrawImage(element.Image, new Point((int)(element.Coordinates.X - element.Image.Width / 2), (int)(element.Coordinates.Y - element.Image.Height / 2)));
                     g.DrawEllipse(new Pen(Color.Red), (int)element.Coordinates.X, (int)element.Coordinates.Y, 10, 10);
                 }
@@ -134,7 +134,7 @@ namespace DoodleJump
             e.Graphics.TranslateTransform(0.0F, -(float)Height);
             e.Graphics.FillRectangle(Brushes.Bisque, ClientRectangle);
             var g = Graphics.FromImage(backgroundImage);
-           
+
 
             g.Clear(Color.AntiqueWhite);
             DrawTo(g);

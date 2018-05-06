@@ -51,7 +51,7 @@ namespace DoodleJump
         {
             Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(angle), Player.Coordinates.Y));
 
-            if (Player.Coordinates.Y >= ScreenHeight / 2 && Player.Acceleration>0)
+            if (Player.Coordinates.Y >= ScreenHeight / 2 && Player.Acceleration > 0)
             {
                 foreach (var element in Map)
                 {
@@ -92,7 +92,7 @@ namespace DoodleJump
         }
         private void MoveBluePlatform(BluePlatform platform)
         {
-            platform.Move(new Vector(platform.Coordinates.X , platform.Coordinates.Y));
+            platform.Move(new Vector(platform.Coordinates.X, platform.Coordinates.Y));
         }
 
 
