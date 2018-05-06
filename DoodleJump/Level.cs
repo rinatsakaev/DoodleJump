@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -18,10 +19,11 @@ namespace DoodleJump
         private static int ScreenHeight;
         private static Func<IEnumerable<IObstacle>> MapGenerator;
         private static bool hasToJump = false;
+
         private static Player GetPlayer()
         {
-            var player = (Player) Map.Where(e => e is Player).FirstOrDefault();
-            return  player ?? throw new Exception();
+            var player = (Player)Map.Where(e => e is Player).FirstOrDefault();
+            return player ?? throw new Exception();
         }
 
         public Level(Func<IEnumerable<IObstacle>> mapGenerator, int screenHeight)
@@ -29,7 +31,8 @@ namespace DoodleJump
             ScreenHeight = screenHeight;
             MapGenerator = mapGenerator;
             Map = new LinkedList<IObstacle>();
-            Map.AddFirst(new Player(new Vector(220, 0)));
+            Map.AddFirst(new Player(new Vector(200, 60)));
+            Map.AddLast(new GreenPlatform(new Vector(200, 50)));
             AddNewObjectsToMap();
             InitializeMoves();
         }
@@ -46,7 +49,17 @@ namespace DoodleJump
 
         private static void MovePlayer(double angle, double distance)
         {
-            Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(angle), Player.Coordinates.Y ));
+            Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(angle), Player.Coordinates.Y));
+
+            if (Player.Coordinates.Y >= ScreenHeight / 2 && Player.Acceleration>0)
+            {
+                foreach (var element in Map)
+                {
+                    if (element is Player)
+                        continue;
+                    element.Move(new Vector(element.Coordinates.X, element.Coordinates.Y - Player.Acceleration));
+                }
+            }
         }
 
         public static void MoveObjects(double playerAngle, double distance)
@@ -79,49 +92,39 @@ namespace DoodleJump
         }
         private void MoveBluePlatform(BluePlatform platform)
         {
-            platform.Move(new Vector(platform.Coordinates.X + 1, platform.Coordinates.Y));
+            platform.Move(new Vector(platform.Coordinates.X , platform.Coordinates.Y));
         }
 
 
         public static void UpdateMap()
         {
-            RemoveOldObjectsFromMap();
-            bool jump = false;
+
             foreach (var element in Map)
             {
                 if (element is Player)
                     continue;
-                if (Player.Coordinates.Y - element.Coordinates.Y <= element.Image.Height
-                    && Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width)
+                if (Math.Abs(Player.Coordinates.Y - element.Coordinates.Y) <= element.Image.Height
+                    && Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width / 2)
                 {
-                    jump = true;
+                    Player.Jump();
                     break;
                 }
-                
             }
 
-            if (jump)
-                Player.Move(new Vector(Player.Coordinates.X, Player.Coordinates.Y + VerticalDistance/5));
- 
-            foreach (var element in Map)
-            {
-                if (element is Player)
-                    continue;
-                if (Player.Coordinates.Y > ScreenHeight * 0.2)
-                    element.Move(new Vector(element.Coordinates.X, element.Coordinates.Y - VerticalDistance/5));
-            }
+            RemoveOldObjectsFromMap();
 
-            if (Player.Health == 0||Map.FindMinElement() is Player && Player.Acceleration<=0)
+            if (Player.Health == 0 || Map.FindMinElement() is Player && Player.Acceleration <= 0)
                 IsCompleted = true;
-            
+
             AddNewObjectsToMap();
+
         }
 
         private static void AddNewObjectsToMap()
         {
             foreach (var obstacle in MapGenerator())
             {
-                if (Map.Count<8&&Player.Coordinates.Y <= ScreenHeight * 0.5)
+                if (Map.Count < 15)
                     Map.AddLast(obstacle);
             }
         }
@@ -130,7 +133,7 @@ namespace DoodleJump
         private static void RemoveOldObjectsFromMap()
         {
             Map.RemoveAll(item =>
-                item.Coordinates.Y <0);
+                item.Coordinates.Y < 0);
 
         }
 
@@ -170,7 +173,7 @@ namespace DoodleJump
             {
                 throw new ArgumentNullException("list");
             }
-       
+
             var count = 0;
             var node = list.First;
             var min = double.MaxValue;
@@ -178,7 +181,7 @@ namespace DoodleJump
             while (node != null)
             {
                 var next = node.Next;
-                if (node.Value.Coordinates.Y<min)
+                if (node.Value.Coordinates.Y < min)
                 {
                     maxO = node.Value;
                     min = node.Value.Coordinates.Y;

@@ -12,29 +12,30 @@ namespace DoodleJump
     {
         public Vector Coordinates { get; private set; }
         public int Health { get; set; }
-        private bool isFalling;
-        private int MaxAcceleration = 15;
+        public bool isFalling { get; set; }
+        public int MaxAcceleration = 15;
         public void Move(Vector toPoint)
         {
-            if (toPoint.Y != Coordinates.Y)
-            {
-                Acceleration = 0;
-                isFalling = false;
-            }
-
+            if (isFalling)
+                Acceleration--;
             if (!isFalling && Acceleration < MaxAcceleration)
                 Acceleration++;
             if (Acceleration == MaxAcceleration)
                 isFalling = true;
-            if (isFalling)
-                Acceleration--;
             Coordinates = new Vector(toPoint.X, toPoint.Y + Acceleration);
         }
+
+        public void Jump()
+        {
+            isFalling = false;
+            Acceleration = 15;
+        }
+
 
         public Image Image { get; set; }
         public int Damage { get; set; }
 
-        public int Acceleration { get; private set; }
+        public int Acceleration { get; set; }
 
         public Player(Vector coordinates)
         {
@@ -73,16 +74,26 @@ namespace DoodleJump
     public class BluePlatform : IObstacle
     {
         public Vector Coordinates { get; private set; }
-        public int Acceleration { get; }
+        public int Acceleration { get; private set; }
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
-            Coordinates = toPoint;
+
+            if (isFalling&&Acceleration>-MaxAcceleration)
+                Acceleration--;
+            if (!isFalling && Acceleration < MaxAcceleration)
+                Acceleration++;
+            if (Acceleration == MaxAcceleration)
+                isFalling = true;
+            if (Acceleration == -MaxAcceleration)
+                isFalling = false;
+            Coordinates = new Vector(toPoint.X + Acceleration, toPoint.Y);
         }
 
         public Image Image { get; set; }
         public int Damage { get; set; }
-
+        private bool isFalling = false;
+        private int MaxAcceleration = 10;
         public BluePlatform(Vector coordinates)
         {
             Coordinates = coordinates;
@@ -90,6 +101,7 @@ namespace DoodleJump
             Damage = 0;
             Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\blueplatform.png");
             Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            Acceleration = 0;
         }
     }
 

@@ -27,7 +27,7 @@ namespace DoodleJump
             Controls.Add(lbl);
             DoubleBuffered = true;
             var level = new Level(GenerateMap, Height);
-            timer = new Timer { Interval = 20 };
+            timer = new Timer { Interval = 70 };
             timer.Tick += TimerTick;
             timer.Start();
         }
@@ -36,12 +36,12 @@ namespace DoodleJump
         private IEnumerable<IObstacle> GenerateMap()
         {
             var playerHeight = Level.Player.Coordinates.Y;
-            if (playerHeight < 100)
+           
                 allowedObjects.Add(typeof(GreenPlatform));
-            /* if (playerHeight < 500)
-                 allowedObjects.Add(typeof(RedPlatform));
-             if (playerHeight < 1000)
-                 allowedObjects.Add(typeof(UFO));*/
+             
+                 allowedObjects.Add(typeof(BluePlatform));
+    
+     
             var random = new Random();
 
             var type = allowedObjects.ElementAt(random.Next(allowedObjects.Count));
@@ -55,7 +55,7 @@ namespace DoodleJump
             var rnd = new Random();
           
             var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(0, Height));
-            //var coordinates = new Vector(200, 100);
+            //var coordinates = new Vector(200, 60);
             var result = (IObstacle)Activator.CreateInstance(type, new object[] { coordinates });
             if (result is GreenPlatform)
             {
@@ -86,7 +86,7 @@ namespace DoodleJump
             else if (left) angle = Math.PI;
 
             Level.MoveObjects(angle, horizontalDistance);
-            lbl.Text = "Player:" + Level.Player.Coordinates.X + " " + Level.Player.Coordinates.Y;
+            lbl.Text = "Player:" + Level.Player.Coordinates.X + " " + Level.Player.Coordinates.Y+"\n"+Level.Player.Acceleration;
             if (Level.IsCompleted)
                 timer.Stop();
             Invalidate();
@@ -120,8 +120,9 @@ namespace DoodleJump
             {
                 foreach (var element in Level.Map)
                 {
-                    g.DrawImage(element.Image, new Point((int)element.Coordinates.X, (int)element.Coordinates.Y));
                    
+                    g.DrawImage(element.Image, new Point((int)(element.Coordinates.X - element.Image.Width / 2), (int)(element.Coordinates.Y - element.Image.Height / 2)));
+                    g.DrawEllipse(new Pen(Color.Red), (int)element.Coordinates.X, (int)element.Coordinates.Y, 10, 10);
                 }
             }
         }
