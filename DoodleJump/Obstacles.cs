@@ -14,15 +14,15 @@ namespace DoodleJump
         public int Health { get; set; }
         public bool isFalling { get; set; }
         public int MaxAcceleration = 15;
-        public void Move(Vector toPoint)
+        public void Move(Vector delta)
         {
-            if (isFalling)
-                Acceleration--;
-            if (!isFalling && Acceleration < MaxAcceleration)
-                Acceleration++;
-            if (Acceleration == MaxAcceleration)
-                isFalling = true;
-            Coordinates = new Vector(toPoint.X, toPoint.Y + Acceleration);
+            //if (isFalling)
+            //    Acceleration--;
+            //if (!isFalling && Acceleration < MaxAcceleration)
+            //    Acceleration++;
+            //if (Acceleration == MaxAcceleration)
+            //    isFalling = true;
+            Coordinates = new Vector(delta.X,delta.Y);
         }
 
         public void Jump()
@@ -42,8 +42,8 @@ namespace DoodleJump
             Coordinates = coordinates;
             Health = 3;
             Damage = 1;
-            //Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\player.png");
-            Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\player.png");
+            Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\player.png");
+            //Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\player.png");
             Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
         }
     }
@@ -67,8 +67,8 @@ namespace DoodleJump
             Coordinates = coordinates;
             Health = 3;
             Damage = 0;
-            //Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\greenplatform.png");
-            Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\greenplatform.png");
+            Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\greenplatform.png");
+            //Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\greenplatform.png");
             Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
         }
     }
@@ -80,15 +80,7 @@ namespace DoodleJump
         public int Health { get; set; }
         public void Move(Vector toPoint)
         {
-            //if (isFalling&&Acceleration>-MaxAcceleration)
-            //    Acceleration--;
-            //if (!isFalling && Acceleration < MaxAcceleration)
-            //    Acceleration++;
-            //if (Acceleration == MaxAcceleration)
-            //    isFalling = true;
-            //if (Acceleration == -MaxAcceleration)
-            //    isFalling = false;
-            //Coordinates = new Vector(toPoint.X + Acceleration, toPoint.Y);
+
             var speed = 5;
             if (isFalling)
                 Acceleration = speed;
@@ -110,8 +102,8 @@ namespace DoodleJump
             Coordinates = coordinates;
             Health = 3;
             Damage = 0;
-            //Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\blueplatform.png");
-            Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\blueplatform.png");
+            Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\blueplatform.png");
+            //Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\blueplatform.png");
             Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
             Acceleration = 0;
         }
@@ -135,8 +127,8 @@ namespace DoodleJump
             Coordinates = coordinates;
             Health = 0;
             Damage = 0;
-            //Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\redplatform.png");
-            Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\redplatform.png");
+            Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\redplatform.png");
+            //Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\redplatform.png");
             Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
         }
     }
@@ -159,8 +151,8 @@ namespace DoodleJump
             Coordinates = coordinates;
             Damage = 3;
             Health = 2;
-            //Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\ufo.png");
-            Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\ufo.png");
+            Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\ufo.png");
+            //Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\ufo.png");
             Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
         }
     }
@@ -183,8 +175,8 @@ namespace DoodleJump
             Coordinates = coordinates;
             Damage = 1;
             Health = 0;
-            //Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bullet.png");
-            Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\bullet.png");
+           Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bullet.png");
+            //Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\bullet.png");
             Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
         }
     }

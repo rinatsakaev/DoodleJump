@@ -15,14 +15,15 @@ namespace DoodleJump
         public static Player Player => GetPlayer();
         public static LinkedList<IObstacle> Map;
         public static Dictionary<string, Action<IObstacle>> moves;
-        private static double VerticalDistance = 15;
+        private static double JumpDistance = 20;
         private static int ScreenHeight;
         private static Func<IEnumerable<IObstacle>> MapGenerator;
-        private static bool hasToJump = false;
-
+ 
+        private static double dx, dy;
+ 
         private static Player GetPlayer()
         {
-            var player = (Player)Map.Where(e => e is Player).FirstOrDefault();
+            var player = (Player) Map.FirstOrDefault(e => e is Player);
             return player ?? throw new Exception();
         }
 
@@ -31,7 +32,7 @@ namespace DoodleJump
             ScreenHeight = screenHeight;
             MapGenerator = mapGenerator;
             Map = new LinkedList<IObstacle>();
-            Map.AddFirst(new Player(new Vector(200, 60)));
+            Map.AddFirst(new Player(new Vector(200, ScreenHeight/2)));
             Map.AddLast(new GreenPlatform(new Vector(200, 50)));
             AddNewObjectsToMap();
             InitializeMoves();
@@ -51,27 +52,40 @@ namespace DoodleJump
         {
             Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(angle), Player.Coordinates.Y));
 
-            if (Player.Coordinates.Y >= ScreenHeight / 2 && Player.Acceleration > 0)
-            {
-                foreach (var element in Map)
-                {
-                    if (element is Player)
-                        continue;
-                    element.Move(new Vector(element.Coordinates.X, element.Coordinates.Y - Player.Acceleration));
-                }
-            }
+             
         }
 
         public static void MoveObjects(double playerAngle, double distance)
         {
-            MovePlayer(playerAngle, distance);
+            dy += 1;
             foreach (var element in Map)
             {
-                if (element is Player)
+                if (element is Player || element is Bullet)
+                    continue;
+                element.Move(new Vector(element.Coordinates.X, element.Coordinates.Y+dy));
+            }
+
+            foreach (var element in Map)
+            {
+                if (element is Player || element is Bullet)
+                    continue;
+                if (Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width / 2 &&
+                    Math.Abs(Player.Coordinates.Y - element.Coordinates.Y) <= element.Image.Height)
+                {
+                    dy = -JumpDistance;
+                    break;
+                }
+            }
+ 
+            Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(playerAngle), Player.Coordinates.Y));
+            foreach (var element in Map)
+            {
+               if (element is Player)
                     continue;
                 moves[element.GetType().Name](element);
             }
             UpdateMap();
+
         }
 
         private void MoveGreenPlatform(GreenPlatform platform)
@@ -99,18 +113,6 @@ namespace DoodleJump
         public static void UpdateMap()
         {
 
-            foreach (var element in Map)
-            {
-                if (element is Player || element is Bullet)
-                    continue;
-                if (Math.Abs(Player.Coordinates.Y - element.Coordinates.Y) <= element.Image.Height + 10
-                    && Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width / 2 + 5 && Player.isFalling)
-                {
-                    Player.Jump();
-                    break;
-                }
-            }
-
             RemoveOldObjectsFromMap();
 
             if (Player.Health == 0 || Map.FindMinElement() is Player && Player.Acceleration <= 0)
@@ -124,7 +126,7 @@ namespace DoodleJump
         {
             foreach (var obstacle in MapGenerator())
             {
-                if (Map.Count < 15)
+                if (Map.Count < 10)
                     Map.AddLast(obstacle);
             }
         }
@@ -133,7 +135,7 @@ namespace DoodleJump
         private static void RemoveOldObjectsFromMap()
         {
             Map.RemoveAll(item =>
-                item.Coordinates.Y < 0);
+                item.Coordinates.Y < 0 || item is Bullet && item.Coordinates.Y>600);
 
         }
 

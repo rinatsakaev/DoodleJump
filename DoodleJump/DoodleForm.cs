@@ -19,8 +19,8 @@ namespace DoodleJump
         private bool space;
         private double horizontalDistance = 10;
         private readonly Timer timer;
-        //private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bg.png");
-        private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\bg.png");
+        private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bg.png");
+        //private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\bg.png");
         private HashSet<Type> allowedObjects = new HashSet<Type>();
         private Control lbl = new Label();
         public DoodleForm()
@@ -37,7 +37,6 @@ namespace DoodleJump
 
         private IEnumerable<IObstacle> GenerateMap()
         {
-            var playerHeight = Level.Player.Coordinates.Y;
 
             allowedObjects.Add(typeof(GreenPlatform));
 
@@ -57,7 +56,7 @@ namespace DoodleJump
             var rnd = new Random();
 
             var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(0, Height));
-            //var coordinates = new Vector(200, 60);
+             //var coordinates = new Vector(200, 60);
             var result = (IObstacle)Activator.CreateInstance(type, new object[] { coordinates });
             if (result is GreenPlatform)
             {
@@ -130,10 +129,18 @@ namespace DoodleJump
             {
                 foreach (var element in Level.Map)
                 {
-
                     g.DrawImage(element.Image, new Point((int)(element.Coordinates.X - element.Image.Width / 2), (int)(element.Coordinates.Y - element.Image.Height / 2)));
                     g.DrawEllipse(new Pen(Color.Red), (int)element.Coordinates.X, (int)element.Coordinates.Y, 10, 10);
                 }
+            }
+            else
+            {
+
+                var img = Image.FromFile(
+                    "C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\game_over.png");
+                 img.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                g.ScaleTransform(0.7F, 0.7F);
+                g.DrawImage(img,new Point(0,0));
             }
         }
 
@@ -143,8 +150,6 @@ namespace DoodleJump
             e.Graphics.TranslateTransform(0.0F, -(float)Height);
             e.Graphics.FillRectangle(Brushes.Bisque, ClientRectangle);
             var g = Graphics.FromImage(backgroundImage);
-
-
             g.Clear(Color.AntiqueWhite);
             DrawTo(g);
             e.Graphics.DrawImage(backgroundImage, (ClientRectangle.Width - backgroundImage.Width) / 2, (ClientRectangle.Height - backgroundImage.Height) / 2);
