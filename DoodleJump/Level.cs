@@ -20,10 +20,10 @@ namespace DoodleJump
         private static Func<IEnumerable<IObstacle>> MapGenerator;
         public static int Score { get; private set; }
         private static double dx, dy;
- 
+
         private static Player GetPlayer()
         {
-            var player = (Player) Map.FirstOrDefault(e => e is Player);
+            var player = (Player)Map.FirstOrDefault(e => e is Player);
             return player ?? throw new Exception();
         }
 
@@ -32,7 +32,7 @@ namespace DoodleJump
             ScreenHeight = screenHeight;
             MapGenerator = mapGenerator;
             Map = new LinkedList<IObstacle>();
-            Map.AddFirst(new Player(new Vector(200, ScreenHeight/2)));
+            Map.AddFirst(new Player(new Vector(200, ScreenHeight / 2)));
             Map.AddLast(new GreenPlatform(new Vector(200, 50)));
             AddNewObjectsToMap();
             InitializeMoves();
@@ -60,8 +60,8 @@ namespace DoodleJump
             {
                 if (element is Player || element is Bullet)
                     continue;
-                element.Move(new Vector(element.Coordinates.X, element.Coordinates.Y+dy));
-                
+                element.Move(new Vector(element.Coordinates.X, element.Coordinates.Y + dy));
+
             }
 
             Score -= (int)dy;
@@ -74,15 +74,16 @@ namespace DoodleJump
                 {
                     Player.Health -= element.Damage;
                     element.Health -= Player.Damage;
-                    dy = -JumpDistance;
+                    if (Player.Coordinates.Y > element.Coordinates.Y)
+                        dy = -JumpDistance;
                     break;
                 }
             }
- 
+
             Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(playerAngle), Player.Coordinates.Y));
             foreach (var element in Map)
             {
-               if (element is Player)
+                if (element is Player)
                     continue;
                 moves[element.GetType().Name](element);
             }
@@ -115,7 +116,7 @@ namespace DoodleJump
         public static void UpdateMap()
         {
             if (Player.Health <= 0)
-                IsCompleted = true; 
+                IsCompleted = true;
 
             RemoveOldObjectsFromMap();
 
@@ -138,7 +139,7 @@ namespace DoodleJump
 
         private static void RemoveOldObjectsFromMap()
         {
-            Map.RemoveAll(item => item.Coordinates.Y < 0 || item is Bullet && item.Coordinates.Y>600 || item.Health<=0);
+            Map.RemoveAll(item => item.Coordinates.Y < 0 || item is Bullet && item.Coordinates.Y > 600 || item.Health <= 0);
         }
 
 
