@@ -23,6 +23,7 @@ namespace DoodleJump
         //private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\bg.png");
         private HashSet<Type> allowedObjects = new HashSet<Type>();
         private Control lbl = new Label();
+        private int maxScore =0;
         public DoodleForm()
         {
             InitializeComponent();
@@ -37,12 +38,15 @@ namespace DoodleJump
 
         private IEnumerable<IObstacle> GenerateMap()
         {
-
+            
             allowedObjects.Add(typeof(GreenPlatform));
-
-            allowedObjects.Add(typeof(BluePlatform));
-
-
+            if (maxScore >1000)
+                allowedObjects.Add(typeof(BluePlatform));
+            if (maxScore > 1500)
+                allowedObjects.Add(typeof(RedPlatform));
+            if (maxScore>2000)
+                allowedObjects.Add(typeof(UFO));
+           
             var random = new Random();
 
             var type = allowedObjects.ElementAt(random.Next(allowedObjects.Count));
@@ -61,13 +65,13 @@ namespace DoodleJump
             if (result is GreenPlatform)
             {
                 result.Damage = 0;
-                result.Health = 3;
+                result.Health = int.MaxValue;
             }
 
             if (result is RedPlatform)
             {
                 result.Damage = 0;
-                result.Health = 0;
+                result.Health = 1;
             }
 
             if (result is UFO)
@@ -80,6 +84,11 @@ namespace DoodleJump
             {
                 result.Damage = 2;
                 result.Health = 3;
+            }
+            if (result is BluePlatform)
+            {
+                result.Damage = 0;
+                result.Health = int.MaxValue;
             }
 
             return result;
@@ -94,7 +103,9 @@ namespace DoodleJump
                 Level.Map.AddFirst(new Bullet(Level.Player.Coordinates));
 
             Level.MoveObjects(angle, horizontalDistance);
-            lbl.Text = "Player:" + Level.Player.Coordinates.X + " " + Level.Player.Coordinates.Y + "\n" + Level.Player.Acceleration;
+            if (Level.Score > maxScore)
+                maxScore = Level.Score;
+            lbl.Text = maxScore+"";
             if (Level.IsCompleted)
                 timer.Stop();
             Invalidate();

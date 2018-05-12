@@ -125,7 +125,7 @@ namespace DoodleJump
         public RedPlatform(Vector coordinates)
         {
             Coordinates = coordinates;
-            Health = 0;
+            Health = 1;
             Damage = 0;
             Image = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\redplatform.png");
             //Image = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\redplatform.png");

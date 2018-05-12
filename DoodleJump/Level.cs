@@ -18,7 +18,7 @@ namespace DoodleJump
         private static double JumpDistance = 20;
         private static int ScreenHeight;
         private static Func<IEnumerable<IObstacle>> MapGenerator;
- 
+        public static int Score { get; private set; }
         private static double dx, dy;
  
         private static Player GetPlayer()
@@ -50,9 +50,7 @@ namespace DoodleJump
 
         private static void MovePlayer(double angle, double distance)
         {
-            Player.Move(new Vector(Player.Coordinates.X + distance * Math.Cos(angle), Player.Coordinates.Y));
-
-             
+            Player.Move(new Vector((Player.Coordinates.X + distance * Math.Cos(angle)) % 400, Player.Coordinates.Y));
         }
 
         public static void MoveObjects(double playerAngle, double distance)
@@ -63,8 +61,10 @@ namespace DoodleJump
                 if (element is Player || element is Bullet)
                     continue;
                 element.Move(new Vector(element.Coordinates.X, element.Coordinates.Y+dy));
+                
             }
 
+            Score -= (int)dy;
             foreach (var element in Map)
             {
                 if (element is Player || element is Bullet)
@@ -72,6 +72,8 @@ namespace DoodleJump
                 if (Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width / 2 &&
                     Math.Abs(Player.Coordinates.Y - element.Coordinates.Y) <= element.Image.Height)
                 {
+                    Player.Health -= element.Damage;
+                    element.Health -= Player.Damage;
                     dy = -JumpDistance;
                     break;
                 }
@@ -112,10 +114,12 @@ namespace DoodleJump
 
         public static void UpdateMap()
         {
+            if (Player.Health <= 0)
+                IsCompleted = true; 
 
             RemoveOldObjectsFromMap();
 
-            if (Player.Health == 0 || Map.FindMinElement() is Player && Player.Acceleration <= 0)
+            if (Map.FindMinElement() is Player && Player.Acceleration <= 0)
                 IsCompleted = true;
 
             AddNewObjectsToMap();
@@ -126,7 +130,7 @@ namespace DoodleJump
         {
             foreach (var obstacle in MapGenerator())
             {
-                if (Map.Count < 10)
+                if (Map.Count < 15)
                     Map.AddLast(obstacle);
             }
         }
@@ -134,9 +138,7 @@ namespace DoodleJump
 
         private static void RemoveOldObjectsFromMap()
         {
-            Map.RemoveAll(item =>
-                item.Coordinates.Y < 0 || item is Bullet && item.Coordinates.Y>600);
-
+            Map.RemoveAll(item => item.Coordinates.Y < 0 || item is Bullet && item.Coordinates.Y>600 || item.Health<=0);
         }
 
 
