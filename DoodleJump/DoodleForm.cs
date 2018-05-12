@@ -19,11 +19,12 @@ namespace DoodleJump
         private bool space;
         private double horizontalDistance = 10;
         private readonly Timer timer;
-        private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bg.png");
-        //private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\bg.png");
+        //private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bg.png");
+        private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\bg.png");
         private HashSet<Type> allowedObjects = new HashSet<Type>();
         private Control lbl = new Label();
-        private int maxScore =0;
+        private int maxScore = 0;
+        private int count = 0;
         public DoodleForm()
         {
             InitializeComponent();
@@ -38,18 +39,27 @@ namespace DoodleJump
 
         private IEnumerable<IObstacle> GenerateMap()
         {
-            
             allowedObjects.Add(typeof(GreenPlatform));
-            if (maxScore >1000)
+            if (maxScore > 1000)
                 allowedObjects.Add(typeof(BluePlatform));
             if (maxScore > 1500)
                 allowedObjects.Add(typeof(RedPlatform));
-            if (maxScore>2000)
+            if (maxScore > 2000)
                 allowedObjects.Add(typeof(UFO));
-           
-            var random = new Random();
 
-            var type = allowedObjects.ElementAt(random.Next(allowedObjects.Count));
+            var random = new Random();
+            //var type = allowedObjects.ElementAt(random.Next(allowedObjects.Count));
+            Type type;
+            var num = random.Next(100);
+            if (num >= 50 && num < 79 && allowedObjects.Contains(typeof(BluePlatform)))
+                type = typeof(BluePlatform);
+            else if (num >= 79 && num < 99 && allowedObjects.Contains(typeof(RedPlatform)))
+                type = typeof(RedPlatform);
+            else if (num >= 99 && allowedObjects.Contains(typeof(UFO)))
+                type = typeof(UFO);
+            else
+                type = typeof(GreenPlatform);
+
 
             yield return GetObstacleByType(type);
 
@@ -58,9 +68,15 @@ namespace DoodleJump
         private IObstacle GetObstacleByType(Type type)
         {
             var rnd = new Random();
-
-            var coordinates = new Vector(rnd.Next(0, Width), rnd.Next(0, Height));
-             //var coordinates = new Vector(200, 60);
+            Vector coordinates;
+            if (count < 10)
+            {
+                coordinates = new Vector(rnd.Next(15, Width-15), rnd.Next(0, Height));
+                count++;
+            }
+            else
+                coordinates = new Vector(rnd.Next(15, Width-15), Height);
+            //var coordinates = new Vector(200, 60);
             var result = (IObstacle)Activator.CreateInstance(type, new object[] { coordinates });
             if (result is GreenPlatform)
             {
@@ -105,7 +121,7 @@ namespace DoodleJump
             Level.MoveObjects(angle, horizontalDistance);
             if (Level.Score > maxScore)
                 maxScore = Level.Score;
-            lbl.Text = maxScore+"";
+            lbl.Text = maxScore + "";
             if (Level.IsCompleted)
                 timer.Stop();
             Invalidate();
@@ -149,9 +165,9 @@ namespace DoodleJump
 
                 var img = Image.FromFile(
                     "C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\game_over.png");
-                 img.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                img.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 g.ScaleTransform(0.7F, 0.7F);
-                g.DrawImage(img,new Point(0,0));
+                g.DrawImage(img, new Point(0, 0));
             }
         }
 
