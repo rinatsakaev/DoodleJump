@@ -19,8 +19,8 @@ namespace DoodleJump
         private bool space;
         private double horizontalDistance = 10;
         private readonly Timer timer;
-        //private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bg.png");
-        private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\bg.png");
+        private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Rinat\\source\\repos\\DoodleJump\\DoodleJump\\images\\bg.png");
+        //private readonly Image backgroundImage = Image.FromFile("C:\\Users\\Всеволод\\Documents\\ProgrammingStuff\\C#\\DoodleJump\\DoodleJump\\images\\bg.png");
         private HashSet<Type> allowedObjects = new HashSet<Type>();
         private Control lbl = new Label();
         private int maxScore = 0;
@@ -31,7 +31,7 @@ namespace DoodleJump
             Controls.Add(lbl);
             DoubleBuffered = true;
             var level = new Level(GenerateMap, Height);
-            timer = new Timer { Interval = 70 };
+            timer = new Timer { Interval = 20 };
             timer.Tick += TimerTick;
             timer.Start();
         }
@@ -78,34 +78,7 @@ namespace DoodleJump
                 coordinates = new Vector(rnd.Next(15, Width-15), Height);
             //var coordinates = new Vector(200, 60);
             var result = (IObstacle)Activator.CreateInstance(type, new object[] { coordinates });
-            if (result is GreenPlatform)
-            {
-                result.Damage = 0;
-                result.Health = int.MaxValue;
-            }
-
-            if (result is RedPlatform)
-            {
-                result.Damage = 0;
-                result.Health = 1;
-            }
-
-            if (result is UFO)
-            {
-                result.Damage = 3;
-                result.Health = 2;
-            }
-
-            if (result is Bullet)
-            {
-                result.Damage = 2;
-                result.Health = 3;
-            }
-            if (result is BluePlatform)
-            {
-                result.Damage = 0;
-                result.Health = int.MaxValue;
-            }
+ 
 
             return result;
         }
@@ -157,7 +130,7 @@ namespace DoodleJump
                 foreach (var element in Level.Map)
                 {
                     g.DrawImage(element.Image, new Point((int)(element.Coordinates.X - element.Image.Width / 2), (int)(element.Coordinates.Y - element.Image.Height / 2)));
-                    g.DrawEllipse(new Pen(Color.Red), (int)element.Coordinates.X, (int)element.Coordinates.Y, 10, 10);
+                    //g.DrawEllipse(new Pen(Color.Red), (int)element.Coordinates.X, (int)element.Coordinates.Y, 10, 10);
                 }
             }
             else

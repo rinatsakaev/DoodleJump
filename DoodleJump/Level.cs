@@ -67,7 +67,7 @@ namespace DoodleJump
             Score -= (int)dy;
             foreach (var element in Map)
             {
-                if (element is Player || element is Bullet)
+                if (element is Player|| element is Bullet)
                     continue;
                 if (Math.Abs(Player.Coordinates.X - element.Coordinates.X) <= element.Image.Width / 2 &&
                     Math.Abs(Player.Coordinates.Y - element.Coordinates.Y) <= element.Image.Height)
@@ -77,6 +77,20 @@ namespace DoodleJump
                     if (Player.Coordinates.Y > element.Coordinates.Y)
                         dy = -JumpDistance;
                     break;
+                }
+
+
+            }
+            foreach (var element in Map.Where(o=>o is UFO))
+            {
+                foreach (var bullet in Map.Where(o=>o is Bullet))
+                {
+                    if (Math.Abs(element.Coordinates.X - bullet.Coordinates.X) <= element.Image.Width / 2 &&
+                   Math.Abs(element.Coordinates.Y - bullet.Coordinates.Y) <= element.Image.Height)
+                    {
+                        element.Health -= bullet.Damage;
+                        bullet.Health -= 1;
+                    }
                 }
             }
 
@@ -131,7 +145,7 @@ namespace DoodleJump
         {
             foreach (var obstacle in MapGenerator())
             {
-                if (Map.Count < 15)
+                if (Map.Where(o=>!(o is Bullet)).Count() < 15)
                     Map.AddLast(obstacle);
             }
         }
@@ -139,7 +153,7 @@ namespace DoodleJump
 
         private static void RemoveOldObjectsFromMap()
         {
-            Map.RemoveAll(item => item.Coordinates.Y < 0 || item is Bullet && item.Coordinates.Y > 600 || item.Health <= 0);
+            Map.RemoveAll(item => (item is Bullet && item.Coordinates.Y>ScreenHeight+15)|| item.Coordinates.Y < 0 || item.Health <= 0);
         }
 
 
@@ -164,7 +178,7 @@ namespace DoodleJump
                 var next = node.Next;
                 if (match(node.Value))
                 {
-                    list.Remove(node);
+                     list.Remove(node);
                     count++;
                 }
                 node = next;
